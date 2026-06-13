@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ТЕСТИРОВАНИЕ ACADЭКС</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    .screen { display: none; min-height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    .header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .header .back { cursor: pointer; font-size: 22px; line-height: 1; padding-right: 4px; }
+    .header .timer { margin-left: auto; font-size: 13px; color: #aaa; font-weight: 400; }
+
+    .body { padding: 20px 16px; flex: 1; }
+
+    .app-logo { text-align: center; padding: 28px 0 24px; }
+    .app-logo .logo-icon {
+      width: 56px; height: 56px;
+      background: #1a1a1a;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 26px;
+    }
+    .app-logo h1 { font-size: 17px; font-weight: 500; letter-spacing: 0.5px; }
+    .app-logo p { font-size: 13px; color: #888; margin-top: 4px; }
+
+    .section-label {
+      font-size: 11px; color: #888;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .reg-btn {
+      display: block; width: 100%;
+      background: #fff; border: 0.5px solid #ddd;
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 10px; text-align: left; cursor: pointer;
+    }
+    .reg-btn:active { background: #f0f0f0; }
+    .reg-btn .reg-title { font-size: 14px; font-weight: 500; color: #1a1a1a; display: block; }
+    .reg-btn .reg-sub { font-size: 12px; color: #888; margin-top: 3px; display: block; }
+    .reg-btn .reg-arrow { float: right; color: #bbb; font-size: 18px; margin-top: -2px; }
+
+    .user-info {
+      background: #fff; border: 0.5px solid #ddd;
+      border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 20px; font-size: 13px; color: #555;
+    }
+    .user-info strong { color: #1a1a1a; }
+
+    .not-found {
+      background: #fff3f3; border: 0.5px solid #ffcccc;
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 20px; font-size: 13px;
+      color: #cc3333; text-align: center;
+    }
+
+    .progress-wrap { margin-bottom: 14px; }
+    .progress-bar { height: 2px; background: #e0e0e0; border-radius: 2px; }
+    .progress-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width 0.3s; }
+    .progress-text { font-size: 11px; color: #888; margin-top: 6px; letter-spacing: 0.3px; }
+
+    .q-text { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1.55; margin-bottom: 6px; }
+    .q-hint { font-size: 12px; color: #888; margin-bottom: 16px; font-style: italic; }
+
+    .option {
+      display: block; width: 100%;
+      background: #fff; border: 0.5px solid #ddd;
+      border-radius: 8px; padding: 11px 13px;
+      margin-bottom: 8px; font-size: 13px;
+      color: #1a1a1a; text-align: left; cursor: pointer;
+      transition: all 0.15s; line-height: 1.4;
+    }
+    .option:active { background: #f0f0f0; }
+    .option.selected { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .option.correct { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .option.wrong { background: #ffecec; color: #cc3333; border-color: #ffcccc; }
+
+    .btn-next {
+      display: block; width: 100%;
+      background: #1a1a1a; color: #fff;
+      border: none; border-radius: 8px;
+      padding: 13px; font-size: 14px; font-weight: 500;
+      cursor: pointer; margin-top: 16px;
+    }
+    .btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .result-wrap { text-align: center; padding: 24px 0 20px; }
+    .result-score-big { font-size: 52px; font-weight: 500; color: #1a1a1a; line-height: 1; }
+    .result-total { font-size: 14px; color: #888; margin-top: 4px; }
+    .result-badge {
+      display: inline-block; margin-top: 12px;
+      padding: 5px 16px; border-radius: 6px;
+      font-size: 13px; font-weight: 500;
+    }
+    .result-badge.pass { background: #e8e8e8; color: #1a1a1a; }
+    .result-badge.fail { background: #ffecec; color: #cc3333; }
+
+    .result-details {
+      background: #fff; border: 0.5px solid #ddd;
+      border-radius: 10px; margin-top: 20px; overflow: hidden;
+    }
+    .result-row {
+      display: flex; justify-content: space-between;
+      padding: 11px 16px; font-size: 13px;
+      border-bottom: 0.5px solid #f0f0f0;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-row span:first-child { color: #888; }
+    .result-row span:last-child { font-weight: 500; }
+
+    .btn-retry {
+      display: block; width: 100%;
+      background: #1a1a1a; color: #fff;
+      border: none; border-radius: 8px;
+      padding: 13px; font-size: 14px; font-weight: 500;
+      cursor: pointer; margin-top: 16px;
+    }
+    .btn-home {
+      display: block; width: 100%;
+      background: #fff; color: #1a1a1a;
+      border: 0.5px solid #ddd; border-radius: 8px;
+      padding: 13px; font-size: 14px;
+      cursor: pointer; margin-top: 10px;
+    }
+
+    .loading {
+      text-align: center; padding: 60px 0;
+      color: #888; font-size: 14px;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid #e0e0e0;
+      border-top-color: #1a1a1a;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- ЭКРАН 1: ГЛАВНАЯ -->
+<div id="screen-home" class="screen active">
+  <div class="header">📋 ТЕСТИРОВАНИЕ ACADЭКС</div>
+  <div class="body">
+    <div class="app-logo">
+      <div class="logo-icon">📝</div>
+      <h1>ТЕСТИРОВАНИЕ ACADЭКС</h1>
+      <p>Проверка знаний регламентов</p>
+    </div>
+    <div id="user-block">
+      <div class="loading"><div class="spinner"></div>Загружаем данные...</div>
+    </div>
+    <div id="test-buttons" style="display:none">
+      <div class="section-label">Выберите регламент</div>
+      <button class="reg-btn" onclick="startTest('Вопросы_Регламент', 'Общий регламент работы')">
+        <span class="reg-arrow">›</span>
+        <span class="reg-title">Общий регламент работы</span>
+        <span class="reg-sub">20 вопросов · 10 минут</span>
+      </button>
+      <button class="reg-btn" onclick="startTest('Вопросы_Культура', 'Корпоративная культура')">
+        <span class="reg-arrow">›</span>
+        <span class="reg-title">Корпоративная культура</span>
+        <span class="reg-sub">20 вопросов · 10 минут</span>
+      </button>
+      <button class="reg-btn" onclick="startTest('Вопросы_BIM', 'BIM-регламент')">
+        <span class="reg-arrow">›</span>
+        <span class="reg-title">BIM-регламент</span>
+        <span class="reg-sub">20 вопросов · 10 минут</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН 2: ЗАГРУЗКА ВОПРОСОВ -->
+<div id="screen-loading" class="screen">
+  <div class="header">📋 ТЕСТИРОВАНИЕ ACADЭКС</div>
+  <div class="body">
+    <div class="loading"><div class="spinner"></div>Загружаем вопросы...</div>
+  </div>
+</div>
+
+<!-- ЭКРАН 3: ВОПРОС -->
+<div id="screen-quiz" class="screen">
+  <div class="header">
+    <span class="back" onclick="confirmExit()">‹</span>
+    <span id="quiz-title">Тест</span>
+    <span class="timer" id="timer">10:00</span>
+  </div>
+  <div class="body">
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">ВОПРОС 1 / 20</div>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint" id="q-hint"></div>
+    <div id="options-wrap"></div>
+    <button class="btn-next" id="btn-next" disabled onclick="nextQuestion()">Следующий вопрос →</button>
+  </div>
+</div>
+
+<!-- ЭКРАН 4: РЕЗУЛЬТАТ -->
+<div id="screen-result" class="screen">
+  <div class="header">🏆 Результат</div>
+  <div class="body">
+    <div class="result-wrap">
+      <div class="result-score-big" id="result-score"></div>
+      <div class="result-total">правильных ответов</div>
+      <div class="result-badge" id="result-badge"></div>
+    </div>
+    <div class="result-details">
+      <div class="result-row"><span>Регламент</span><span id="res-test-name"></span></div>
+      <div class="result-row"><span>Сотрудник</span><span id="res-employee"></span></div>
+      <div class="result-row"><span>Дата</span><span id="res-date"></span></div>
+      <div class="result-row"><span>Затраченное время</span><span id="res-time"></span></div>
+    </div>
+    <button class="btn-retry" onclick="retryTest()">Пройти ещё раз</button>
+    <button class="btn-home" onclick="goHome()">← На главную</button>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxhP3yHc8Jzf0h2CrSuWB14RQxC5xbVY1pxx3YL9THUtMLRiCV9JkBsKVJatLNVJiCV/exec';
+
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+  tg.ready();
+
+  let telegramId = null;
+  let employeeName = '—';
+  let currentQuestions = [];
+  let currentIndex = 0;
+  let score = 0;
+  let selectedAnswers = [];
+  let timerInterval = null;
+  let timeLeft = 600;
+  let startTime = null;
+  let currentSheet = '';
+  let currentTestName = '';
+
+  async function init() {
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      telegramId = tg.initDataUnsafe.user.id;
+      const u = tg.initDataUnsafe.user;
+      employeeName = ([u.first_name, u.last_name].filter(Boolean).join(' ')) || '—';
+    }
+
+    const userBlock = document.getElementById('user-block');
+    const testButtons = document.getElementById('test-buttons');
+
+    try {
+      if (telegramId) {
+        const res = await fetch(`${API_URL}?action=getEmployee&telegramId=${telegramId}`);
+        const data = await res.json();
+        if (data.success && data.name) employeeName = data.name;
+      }
+
+      if (employeeName && employeeName !== '—') {
+        userBlock.innerHTML = `<div class="user-info">👤 <strong>${employeeName}</strong></div>`;
+      } else {
+        userBlock.innerHTML = `<div class="not-found">⚠️ Вы не найдены в списке сотрудников.<br>Обратитесь к администратору.</div>`;
+      }
+    } catch(e) {
+      userBlock.innerHTML = `<div class="user-info">👤 <strong>${employeeName}</strong></div>`;
+    }
+
+    testButtons.style.display = 'block';
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  async function startTest(sheet, testName) {
+    currentSheet = sheet;
+    currentTestName = testName;
+    showScreen('screen-loading');
+
+    try {
+      const res = await fetch(`${API_URL}?action=getQuestions&sheet=${encodeURIComponent(sheet)}`);
+      const data = await res.json();
+
+      if (!data.success || !data.questions || !data.questions.length) {
+        alert('Ошибка загрузки вопросов. Попробуйте позже.');
+        showScreen('screen-home');
+        return;
+      }
+
+      currentQuestions = data.questions;
+      currentIndex = 0;
+      score = 0;
+      timeLeft = 600;
+      startTime = new Date();
+
+      document.getElementById('quiz-title').textContent = testName;
+      showScreen('screen-quiz');
+      startTimer();
+      renderQuestion();
+
+    } catch(e) {
+      alert('Ошибка соединения. Проверьте интернет.');
+      showScreen('screen-home');
+    }
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0) { clearInterval(timerInterval); finishTest(); }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    document.getElementById('timer').textContent = `⏱ ${m}:${s}`;
+  }
+
+  function getElapsed() {
+    const e = Math.floor((new Date() - startTime) / 1000);
+    return `${Math.floor(e/60).toString().padStart(2,'0')}:${(e%60).toString().padStart(2,'0')}`;
+  }
+
+  function renderQuestion() {
+    const q = currentQuestions[currentIndex];
+    selectedAnswers = [];
+    const total = currentQuestions.length;
+
+    document.getElementById('progress-fill').style.width = (currentIndex / total * 100) + '%';
+    document.getElementById('progress-text').textContent = `ВОПРОС ${currentIndex + 1} / ${total}`;
+    document.getElementById('q-text').textContent = q.question;
+    document.getElementById('q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
+
+    const wrap = document.getElementById('options-wrap');
+    wrap.innerHTML = '';
+    q.answers.forEach((ans, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.textContent = ans;
+      btn.onclick = () => selectOption(btn, i + 1, q.type);
+      wrap.appendChild(btn);
+    });
+
+    const nb = document.getElementById('btn-next');
+    nb.disabled = true;
+    nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
+  }
+
+  function selectOption(btn, num, type) {
+    if (type === 'single') {
+      document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedAnswers = [num];
+    } else {
+      btn.classList.toggle('selected');
+      if (btn.classList.contains('selected')) selectedAnswers.push(num);
+      else selectedAnswers = selectedAnswers.filter(a => a !== num);
+    }
+    document.getElementById('btn-next').disabled = selectedAnswers.length === 0;
+  }
+
+  function nextQuestion() {
+    const q = currentQuestions[currentIndex];
+    const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
+    const user = [...selectedAnswers].sort();
+    if (JSON.stringify(correct) === JSON.stringify(user)) score++;
+
+    document.querySelectorAll('.option').forEach((btn, i) => {
+      btn.onclick = null;
+      const num = i + 1;
+      if (correct.includes(num)) { btn.classList.add('correct'); btn.classList.remove('selected'); }
+      else if (selectedAnswers.includes(num)) { btn.classList.add('wrong'); btn.classList.remove('selected'); }
+    });
+    document.getElementById('btn-next').disabled = true;
+
+    setTimeout(() => {
+      currentIndex++;
+      if (currentIndex >= currentQuestions.length) finishTest();
+      else renderQuestion();
+    }, 800);
+  }
+
+  async function finishTest() {
+    clearInterval(timerInterval);
+    const total = currentQuestions.length;
+    const percent = Math.round(score / total * 100);
+    const passed = percent >= 80;
+    const elapsed = getElapsed();
+
+    document.getElementById('result-score').textContent = `${score} / ${total}`;
+    const badge = document.getElementById('result-badge');
+    badge.textContent = passed ? `${percent}% — Зачёт ✓` : `${percent}% — Не зачёт ✗`;
+    badge.className = 'result-badge ' + (passed ? 'pass' : 'fail');
+    document.getElementById('res-test-name').textContent = currentTestName;
+    document.getElementById('res-employee').textContent = employeeName;
+    document.getElementById('res-date').textContent = new Date().toLocaleDateString('ru-RU');
+    document.getElementById('res-time').textContent = elapsed;
+
+    showScreen('screen-result');
+
+    try {
+      await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'saveResult',
+          name: employeeName,
+          telegramId: telegramId,
+          testName: currentTestName,
+          score: score,
+          total: total,
+          percent: percent
+        })
+      });
+    } catch(e) {}
+  }
+
+  function retryTest() { startTest(currentSheet, currentTestName); }
+  function goHome() { clearInterval(timerInterval); showScreen('screen-home'); }
+  function confirmExit() {
+    if (confirm('Выйти из теста? Прогресс будет потерян.')) {
+      clearInterval(timerInterval);
+      showScreen('screen-home');
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
