@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ТЕСТИРОВАНИЕ ACADЭКС</title>
+  <title>ТЕСТИРОВАНИЕ ACADEX</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +32,7 @@
 
     .body { padding: 20px 16px; flex: 1; }
 
-    .app-logo { text-align: center; padding: 28px 0 24px; }
+    .app-logo { text-align: center; padding: 28px 0 20px; }
     .app-logo .logo-icon {
       width: 56px; height: 56px;
       background: #1a1a1a;
@@ -47,8 +47,18 @@
     .section-label {
       font-size: 11px; color: #888;
       text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
+
+    .fio-wrap { margin-bottom: 20px; }
+    .fio-input {
+      width: 100%; padding: 12px 14px;
+      border: 0.5px solid #ddd; border-radius: 10px;
+      font-size: 14px; background: #fff;
+      color: #1a1a1a; outline: none;
+    }
+    .fio-input:focus { border-color: #1a1a1a; }
+    .fio-error { color: #cc3333; font-size: 12px; margin-top: 6px; display: none; }
 
     .reg-btn {
       display: block; width: 100%;
@@ -60,20 +70,6 @@
     .reg-btn .reg-title { font-size: 14px; font-weight: 500; color: #1a1a1a; display: block; }
     .reg-btn .reg-sub { font-size: 12px; color: #888; margin-top: 3px; display: block; }
     .reg-btn .reg-arrow { float: right; color: #bbb; font-size: 18px; margin-top: -2px; }
-
-    .user-info {
-      background: #fff; border: 0.5px solid #ddd;
-      border-radius: 10px; padding: 12px 16px;
-      margin-bottom: 20px; font-size: 13px; color: #555;
-    }
-    .user-info strong { color: #1a1a1a; }
-
-    .not-found {
-      background: #fff3f3; border: 0.5px solid #ffcccc;
-      border-radius: 10px; padding: 14px 16px;
-      margin-bottom: 20px; font-size: 13px;
-      color: #cc3333; text-align: center;
-    }
 
     .progress-wrap { margin-bottom: 14px; }
     .progress-bar { height: 2px; background: #e0e0e0; border-radius: 2px; }
@@ -163,40 +159,44 @@
 
 <!-- ЭКРАН 1: ГЛАВНАЯ -->
 <div id="screen-home" class="screen active">
-  <div class="header">📋 ТЕСТИРОВАНИЕ ACADЭКС</div>
+  <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
   <div class="body">
     <div class="app-logo">
       <div class="logo-icon">📝</div>
-      <h1>ТЕСТИРОВАНИЕ ACADЭКС</h1>
+      <h1>ТЕСТИРОВАНИЕ ACADEX</h1>
       <p>Проверка знаний регламентов</p>
     </div>
-    <div id="user-block">
-      <div class="loading"><div class="spinner"></div>Загружаем данные...</div>
+
+    <div class="fio-wrap">
+      <div class="section-label">Ваше ФИО</div>
+      <input type="text" id="fio-input" class="fio-input"
+        placeholder="Иванов Иван Иванович">
+      <div class="fio-error" id="fio-error">Пожалуйста, введите ФИО</div>
     </div>
-    <div id="test-buttons" style="display:none">
-      <div class="section-label">Выберите регламент</div>
-      <button class="reg-btn" onclick="startTest('Вопросы_Регламент', 'Общий регламент работы')">
-        <span class="reg-arrow">›</span>
-        <span class="reg-title">Общий регламент работы</span>
-        <span class="reg-sub">20 вопросов · 10 минут</span>
-      </button>
-      <button class="reg-btn" onclick="startTest('Вопросы_Культура', 'Корпоративная культура')">
-        <span class="reg-arrow">›</span>
-        <span class="reg-title">Корпоративная культура</span>
-        <span class="reg-sub">20 вопросов · 10 минут</span>
-      </button>
-      <button class="reg-btn" onclick="startTest('Вопросы_BIM', 'BIM-регламент')">
-        <span class="reg-arrow">›</span>
-        <span class="reg-title">BIM-регламент</span>
-        <span class="reg-sub">20 вопросов · 10 минут</span>
-      </button>
-    </div>
+
+    <div class="section-label">Выберите регламент</div>
+
+    <button class="reg-btn" onclick="startTest('Вопросы_Регламент', 'Общий регламент работы')">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Общий регламент работы</span>
+      <span class="reg-sub">20 вопросов · 10 минут</span>
+    </button>
+    <button class="reg-btn" onclick="startTest('Вопросы_Культура', 'Корпоративная культура')">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Корпоративная культура</span>
+      <span class="reg-sub">20 вопросов · 10 минут</span>
+    </button>
+    <button class="reg-btn" onclick="startTest('Вопросы_BIM', 'BIM-регламент')">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">BIM-регламент</span>
+      <span class="reg-sub">20 вопросов · 10 минут</span>
+    </button>
   </div>
 </div>
 
-<!-- ЭКРАН 2: ЗАГРУЗКА ВОПРОСОВ -->
+<!-- ЭКРАН 2: ЗАГРУЗКА -->
 <div id="screen-loading" class="screen">
-  <div class="header">📋 ТЕСТИРОВАНИЕ ACADЭКС</div>
+  <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
   <div class="body">
     <div class="loading"><div class="spinner"></div>Загружаем вопросы...</div>
   </div>
@@ -246,12 +246,16 @@
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbxhP3yHc8Jzf0h2CrSuWB14RQxC5xbVY1pxx3YL9THUtMLRiCV9JkBsKVJatLNVJiCV/exec';
 
-  const tg = window.Telegram.WebApp;
-  tg.expand();
-  tg.ready();
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  if (tg) { tg.expand(); tg.ready(); }
 
-  let telegramId = null;
-  let employeeName = '—';
+  // Telegram ID если открыто через бота, иначе прочерк
+  let telegramId = '—';
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    telegramId = tg.initDataUnsafe.user.id;
+  }
+
+  let employeeName = '';
   let currentQuestions = [];
   let currentIndex = 0;
   let score = 0;
@@ -262,41 +266,25 @@
   let currentSheet = '';
   let currentTestName = '';
 
-  async function init() {
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      telegramId = tg.initDataUnsafe.user.id;
-      const u = tg.initDataUnsafe.user;
-      employeeName = ([u.first_name, u.last_name].filter(Boolean).join(' ')) || '—';
-    }
-
-    const userBlock = document.getElementById('user-block');
-    const testButtons = document.getElementById('test-buttons');
-
-    try {
-      if (telegramId) {
-        const res = await fetch(`${API_URL}?action=getEmployee&telegramId=${telegramId}`);
-        const data = await res.json();
-        if (data.success && data.name) employeeName = data.name;
-      }
-
-      if (employeeName && employeeName !== '—') {
-        userBlock.innerHTML = `<div class="user-info">👤 <strong>${employeeName}</strong></div>`;
-      } else {
-        userBlock.innerHTML = `<div class="not-found">⚠️ Вы не найдены в списке сотрудников.<br>Обратитесь к администратору.</div>`;
-      }
-    } catch(e) {
-      userBlock.innerHTML = `<div class="user-info">👤 <strong>${employeeName}</strong></div>`;
-    }
-
-    testButtons.style.display = 'block';
-  }
-
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
   async function startTest(sheet, testName) {
+    // Проверяем ФИО
+    const fioInput = document.getElementById('fio-input');
+    const fioError = document.getElementById('fio-error');
+    const fio = fioInput.value.trim();
+
+    if (!fio) {
+      fioError.style.display = 'block';
+      fioInput.focus();
+      return;
+    }
+    fioError.style.display = 'none';
+    employeeName = fio;
+
     currentSheet = sheet;
     currentTestName = testName;
     showScreen('screen-loading');
@@ -450,8 +438,6 @@
       showScreen('screen-home');
     }
   }
-
-  init();
 </script>
 </body>
 </html>
