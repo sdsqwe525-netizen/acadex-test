@@ -811,7 +811,7 @@
     const q = a1Questions[studyIndex];
     studySelected = [];
 
-    document.getElementById('study-progress').textContent = `${studyIndex + 1} / ${a1Questions.length}`;
+    document.getElementById('study-progress').textContent = `${q.id} / 211`;
     document.getElementById('study-q-text').textContent = q.question;
     document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
 
