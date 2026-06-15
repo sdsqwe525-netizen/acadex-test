@@ -320,30 +320,46 @@
   </div>
   <div class="body">
     <div class="section-label">Выберите диапазон вопросов</div>
-    <button class="reg-btn" onclick="startStudyMode(1,40)">
+    <button class="reg-btn" onclick="startStudyMode(0)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 1 – 40</span>
     </button>
-    <button class="reg-btn" onclick="startStudyMode(41,80)">
+    <button class="reg-btn" onclick="startStudyMode(1)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 41 – 80</span>
     </button>
-    <button class="reg-btn" onclick="startStudyMode(81,120)">
+    <button class="reg-btn" onclick="startStudyMode(2)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 81 – 120</span>
     </button>
-    <button class="reg-btn" onclick="startStudyMode(121,160)">
+    <button class="reg-btn" onclick="startStudyMode(3)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 121 – 160</span>
     </button>
-    <button class="reg-btn" onclick="startStudyMode(161,200)">
+    <button class="reg-btn" onclick="startStudyMode(4)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 161 – 200</span>
     </button>
-    <button class="reg-btn" onclick="startStudyMode(201,211)">
+    <button class="reg-btn" onclick="startStudyMode(5)">
       <span class="reg-arrow">›</span>
       <span class="reg-title">Вопросы 201 – 211</span>
     </button>
+  </div>
+</div>
+
+<!-- ЭКРАН: БЛОК ЗАВЕРШЁН -->
+<div id="screen-pb-study-complete" class="screen">
+  <div class="header">
+    <span class="back" onclick="showScreen('screen-pb-a1-ranges')">‹</span>
+    Изучение
+  </div>
+  <div class="body">
+    <div class="result-wrap">
+      <div class="result-score-big">✓</div>
+      <div class="result-total" id="study-complete-text">Блок завершён</div>
+    </div>
+    <button class="btn-retry" id="study-complete-next" onclick="goToNextRange()">Следующий блок →</button>
+    <button class="btn-home" onclick="showScreen('screen-pb-a1-ranges')">← К выбору диапазона</button>
   </div>
 </div>
 
@@ -456,9 +472,11 @@
   let exitScreen = 'screen-home';
 
   // Режим изучения
+  const A1_RANGES = [[1,40],[41,80],[81,120],[121,160],[161,200],[201,211]];
   let a1Questions = [];
   let studyIndex = 0;
   let studySelected = [];
+  let currentRangeIndex = 0;
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -764,7 +782,9 @@
 
   // ===================== РЕЖИМ ИЗУЧЕНИЯ =====================
 
-  async function startStudyMode(start, end) {
+  async function startStudyMode(rangeIndex) {
+    currentRangeIndex = rangeIndex;
+    const [start, end] = A1_RANGES[rangeIndex];
     showScreen('screen-loading');
     try {
       const res = await fetch(`${API_URL}?action=getA1Questions&mode=study&start=${start}&end=${end}`);
@@ -791,7 +811,7 @@
     const q = a1Questions[studyIndex];
     studySelected = [];
 
-    document.getElementById('study-progress').textContent = `Вопрос ${q.id} из 211`;
+    document.getElementById('study-progress').textContent = `${studyIndex + 1} / ${a1Questions.length}`;
     document.getElementById('study-q-text').textContent = q.question;
     document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
 
@@ -887,8 +907,28 @@
       studyIndex++;
       renderStudyCard();
     } else {
-      showScreen('screen-pb-a1-ranges');
+      showStudyComplete();
     }
+  }
+
+  function showStudyComplete() {
+    const [start, end] = A1_RANGES[currentRangeIndex];
+    document.getElementById('study-complete-text').textContent = `Блок ${start}–${end} завершён`;
+
+    const nextBtn = document.getElementById('study-complete-next');
+    if (currentRangeIndex < A1_RANGES.length - 1) {
+      const [ns, ne] = A1_RANGES[currentRangeIndex + 1];
+      nextBtn.style.display = 'block';
+      nextBtn.textContent = `Следующий блок: ${ns}–${ne} →`;
+    } else {
+      nextBtn.style.display = 'none';
+    }
+
+    showScreen('screen-pb-study-complete');
+  }
+
+  function goToNextRange() {
+    startStudyMode(currentRangeIndex + 1);
   }
 </script>
 </body>
