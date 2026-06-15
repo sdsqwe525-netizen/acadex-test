@@ -96,8 +96,18 @@
     .option:active { background: #f0f0f0; }
     .option.selected { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .option.correct { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .option.correct-green { background: #2e7d32; color: #fff; border-color: #2e7d32; }
     .option.wrong { background: #ffecec; color: #cc3333; border-color: #ffcccc; }
     .option.static { cursor: default; }
+
+    .result-label {
+      font-size: 13px; font-weight: 600;
+      padding: 10px 12px; border-radius: 8px;
+      margin-bottom: 10px; text-align: center;
+      display: none;
+    }
+    .result-label.correct { background: #e8f5e9; color: #2e7d32; }
+    .result-label.incorrect { background: #ffecec; color: #cc3333; }
 
     .comment-box {
       background: #f5f5f5; border: 0.5px solid #e5e5e5;
@@ -309,11 +319,13 @@
     <div class="q-text" id="study-q-text"></div>
     <div class="q-hint" id="study-q-hint"></div>
     <div id="study-options-wrap"></div>
+    <div class="result-label" id="study-result-label"></div>
     <div class="comment-box" id="study-comment">
       <div class="comment-label">Обоснование</div>
       <div id="study-comment-text"></div>
     </div>
-    <div class="nav-row">
+    <button class="btn-next" id="study-answer-btn" disabled onclick="checkStudyAnswer()">Ответить</button>
+    <div class="nav-row" id="study-nav-row" style="display:none">
       <button class="btn-home" id="study-prev" onclick="studyPrev()">← Назад</button>
       <button class="btn-next" id="study-next" onclick="studyNext()">Далее →</button>
     </div>
@@ -345,6 +357,7 @@
     <div class="q-text" id="q-text"></div>
     <div class="q-hint" id="q-hint"></div>
     <div id="options-wrap"></div>
+    <div class="result-label" id="q-result-label"></div>
     <div class="comment-box" id="q-comment">
       <div class="comment-label">Обоснование</div>
       <div id="q-comment-text"></div>
@@ -406,6 +419,7 @@
   // Режим изучения
   let a1Questions = [];
   let studyIndex = 0;
+  let studySelected = [];
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -546,8 +560,8 @@
     document.getElementById('q-text').textContent = q.question;
     document.getElementById('q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
 
-    const commentBox = document.getElementById('q-comment');
-    commentBox.style.display = 'none';
+    document.getElementById('q-comment').style.display = 'none';
+    document.getElementById('q-result-label').style.display = 'none';
 
     const wrap = document.getElementById('options-wrap');
     wrap.innerHTML = '';
@@ -570,7 +584,7 @@
 
   function selectOption(btn, num, type) {
     if (type === 'single') {
-      document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('#options-wrap .option').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedAnswers = [num];
     } else {
@@ -585,19 +599,36 @@
     const q = currentQuestions[currentIndex];
     const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
     const user = [...selectedAnswers].sort();
-    if (JSON.stringify(correct) === JSON.stringify(user)) score++;
+    const isCorrect = JSON.stringify(correct) === JSON.stringify(user);
+    if (isCorrect) score++;
 
-    document.querySelectorAll('.option').forEach((btn, i) => {
+    document.querySelectorAll('#options-wrap .option').forEach((btn, i) => {
       btn.onclick = null;
       const num = i + 1;
-      if (correct.includes(num)) { btn.classList.add('correct'); btn.classList.remove('selected'); }
-      else if (selectedAnswers.includes(num)) { btn.classList.add('wrong'); btn.classList.remove('selected'); }
+      if (correct.includes(num)) {
+        btn.classList.add(quizMode === 'a1' ? 'correct-green' : 'correct');
+        btn.classList.remove('selected');
+      } else if (selectedAnswers.includes(num)) {
+        btn.classList.add('wrong');
+        btn.classList.remove('selected');
+      }
     });
 
-    if (quizMode === 'a1' && q.comment) {
-      const commentBox = document.getElementById('q-comment');
-      document.getElementById('q-comment-text').textContent = q.comment;
-      commentBox.style.display = 'block';
+    if (quizMode === 'a1') {
+      const label = document.getElementById('q-result-label');
+      label.style.display = 'block';
+      if (isCorrect) {
+        label.textContent = '✓ Правильно';
+        label.className = 'result-label correct';
+      } else {
+        label.textContent = '✗ Неправильно';
+        label.className = 'result-label incorrect';
+      }
+
+      if (q.comment) {
+        document.getElementById('q-comment-text').textContent = q.comment;
+        document.getElementById('q-comment').style.display = 'block';
+      }
     }
   }
 
@@ -713,32 +744,84 @@
 
   function renderStudyCard() {
     const q = a1Questions[studyIndex];
+    studySelected = [];
+
     document.getElementById('study-progress').textContent = `Вопрос ${q.id} из 211`;
     document.getElementById('study-q-text').textContent = q.question;
-    document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Несколько правильных ответов' : '';
+    document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
 
-    const correct = String(q.correct).split(',').map(s => parseInt(s.trim()));
+    document.getElementById('study-result-label').style.display = 'none';
+    document.getElementById('study-comment').style.display = 'none';
+
     const wrap = document.getElementById('study-options-wrap');
     wrap.innerHTML = '';
     q.answers.forEach((ans, i) => {
-      const div = document.createElement('div');
-      div.className = 'option static';
-      if (correct.includes(i + 1)) div.classList.add('correct');
-      div.textContent = ans;
-      wrap.appendChild(div);
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.textContent = ans;
+      btn.onclick = () => selectStudyOption(btn, i + 1, q.type);
+      wrap.appendChild(btn);
     });
 
-    const commentBox = document.getElementById('study-comment');
-    if (q.comment) {
-      commentBox.style.display = 'block';
-      document.getElementById('study-comment-text').textContent = q.comment;
-    } else {
-      commentBox.style.display = 'none';
-    }
+    const answerBtn = document.getElementById('study-answer-btn');
+    answerBtn.style.display = 'block';
+    answerBtn.disabled = true;
+    answerBtn.textContent = 'Ответить';
 
+    document.getElementById('study-nav-row').style.display = 'none';
     document.getElementById('study-prev').disabled = studyIndex === 0;
     document.getElementById('study-next').textContent =
       studyIndex === a1Questions.length - 1 ? 'Завершить' : 'Далее →';
+  }
+
+  function selectStudyOption(btn, num, type) {
+    if (type === 'single') {
+      document.querySelectorAll('#study-options-wrap .option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      studySelected = [num];
+    } else {
+      btn.classList.toggle('selected');
+      if (btn.classList.contains('selected')) studySelected.push(num);
+      else studySelected = studySelected.filter(a => a !== num);
+    }
+    document.getElementById('study-answer-btn').disabled = studySelected.length === 0;
+  }
+
+  function checkStudyAnswer() {
+    const q = a1Questions[studyIndex];
+    const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
+    const user = [...studySelected].sort();
+    const isCorrect = JSON.stringify(correct) === JSON.stringify(user);
+
+    document.querySelectorAll('#study-options-wrap .option').forEach((btn, i) => {
+      btn.onclick = null;
+      const num = i + 1;
+      if (correct.includes(num)) {
+        btn.classList.add('correct-green');
+        btn.classList.remove('selected');
+      } else if (studySelected.includes(num)) {
+        btn.classList.add('wrong');
+        btn.classList.remove('selected');
+      }
+    });
+
+    const label = document.getElementById('study-result-label');
+    label.style.display = 'block';
+    if (isCorrect) {
+      label.textContent = '✓ Правильно';
+      label.className = 'result-label correct';
+    } else {
+      label.textContent = '✗ Неправильно';
+      label.className = 'result-label incorrect';
+    }
+
+    if (q.comment) {
+      document.getElementById('study-comment-text').textContent = q.comment;
+      document.getElementById('study-comment').style.display = 'block';
+    }
+
+    document.getElementById('study-answer-btn').style.display = 'none';
+    document.getElementById('study-nav-row').style.display = 'flex';
   }
 
   function studyPrev() {
