@@ -86,7 +86,8 @@
     .q-hint { font-size: 12px; color: #888; margin-bottom: 16px; font-style: italic; }
 
     .option {
-      display: block; width: 100%;
+      display: flex; align-items: flex-start; gap: 10px;
+      width: 100%;
       background: #fff; border: 0.5px solid #ddd;
       border-radius: 8px; padding: 11px 13px;
       margin-bottom: 8px; font-size: 13px;
@@ -99,6 +100,44 @@
     .option.correct-green { background: #2e7d32; color: #fff; border-color: #2e7d32; }
     .option.wrong { background: #ffecec; color: #cc3333; border-color: #ffcccc; }
     .option.static { cursor: default; }
+
+    .option-text { flex: 1; }
+    .option-indicator {
+      flex-shrink: 0; box-sizing: border-box;
+      width: 16px; height: 16px;
+      border: 1.5px solid #ccc;
+      margin-top: 1px;
+      position: relative;
+    }
+    .option-indicator.radio { border-radius: 50%; }
+    .option-indicator.checkbox { border-radius: 4px; }
+    .option-indicator.radio::after {
+      content: ''; position: absolute;
+      top: 50%; left: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: currentColor;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.15s;
+    }
+    .option-indicator.checkbox::after {
+      content: '✕'; position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 11px; font-weight: 700; line-height: 1;
+      transition: transform 0.15s;
+    }
+    .option.selected .option-indicator,
+    .option.correct .option-indicator,
+    .option.correct-green .option-indicator,
+    .option.wrong .option-indicator {
+      border-color: currentColor;
+    }
+    .option.selected .option-indicator::after,
+    .option.correct .option-indicator::after,
+    .option.correct-green .option-indicator::after,
+    .option.wrong .option-indicator::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
 
     .result-label {
       font-size: 13px; font-weight: 600;
@@ -568,7 +607,13 @@
     q.answers.forEach((ans, i) => {
       const btn = document.createElement('button');
       btn.className = 'option';
-      btn.textContent = ans;
+      const indicator = document.createElement('span');
+      indicator.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
+      const text = document.createElement('span');
+      text.className = 'option-text';
+      text.textContent = ans;
+      btn.appendChild(indicator);
+      btn.appendChild(text);
       btn.onclick = () => selectOption(btn, i + 1, q.type);
       wrap.appendChild(btn);
     });
@@ -758,7 +803,13 @@
     q.answers.forEach((ans, i) => {
       const btn = document.createElement('button');
       btn.className = 'option';
-      btn.textContent = ans;
+      const indicator = document.createElement('span');
+      indicator.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
+      const text = document.createElement('span');
+      text.className = 'option-text';
+      text.textContent = ans;
+      btn.appendChild(indicator);
+      btn.appendChild(text);
       btn.onclick = () => selectStudyOption(btn, i + 1, q.type);
       wrap.appendChild(btn);
     });
