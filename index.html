@@ -29,6 +29,7 @@
     }
     .header .back { cursor: pointer; font-size: 22px; line-height: 1; padding-right: 4px; }
     .header .timer { margin-left: auto; font-size: 13px; color: #aaa; font-weight: 400; }
+    .header .progress-right { margin-left: auto; font-size: 12px; color: #aaa; font-weight: 400; }
 
     .body { padding: 20px 16px; flex: 1; }
 
@@ -71,6 +72,11 @@
     .reg-btn .reg-sub { font-size: 12px; color: #888; margin-top: 3px; display: block; }
     .reg-btn .reg-arrow { float: right; color: #bbb; font-size: 18px; margin-top: -2px; }
 
+    .section-divider {
+      height: 1px; background: #e5e5e5;
+      margin: 18px 0;
+    }
+
     .progress-wrap { margin-bottom: 14px; }
     .progress-bar { height: 2px; background: #e0e0e0; border-radius: 2px; }
     .progress-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width 0.3s; }
@@ -91,6 +97,20 @@
     .option.selected { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .option.correct { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .option.wrong { background: #ffecec; color: #cc3333; border-color: #ffcccc; }
+    .option.static { cursor: default; }
+
+    .comment-box {
+      background: #f5f5f5; border: 0.5px solid #e5e5e5;
+      border-radius: 8px; padding: 12px 13px;
+      margin-top: 4px; margin-bottom: 4px;
+      font-size: 12px; color: #666; line-height: 1.5;
+      display: none;
+    }
+    .comment-box .comment-label {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.6px; color: #999;
+      margin-bottom: 4px; font-weight: 500;
+    }
 
     .btn-next {
       display: block; width: 100%;
@@ -123,7 +143,7 @@
     }
     .result-row:last-child { border-bottom: none; }
     .result-row span:first-child { color: #888; }
-    .result-row span:last-child { font-weight: 500; }
+    .result-row span:last-child { font-weight: 500; text-align: right; padding-left: 12px; }
 
     .btn-retry {
       display: block; width: 100%;
@@ -139,6 +159,10 @@
       padding: 13px; font-size: 14px;
       cursor: pointer; margin-top: 10px;
     }
+    .btn-home:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .nav-row { display: flex; gap: 8px; margin-top: 16px; }
+    .nav-row .btn-home, .nav-row .btn-next { margin-top: 0; flex: 1; }
 
     .loading {
       text-align: center; padding: 60px 0;
@@ -191,10 +215,112 @@
       <span class="reg-title">BIM-регламент</span>
       <span class="reg-sub">20 вопросов · 10 минут</span>
     </button>
+
+    <div class="section-divider"></div>
+
+    <div class="section-label">Дополнительно</div>
+    <button class="reg-btn" onclick="goToPB()">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">🦺 Тесты промбезопасность</span>
+      <span class="reg-sub">База вопросов для подготовки</span>
+    </button>
   </div>
 </div>
 
-<!-- ЭКРАН 2: ЗАГРУЗКА -->
+<!-- ЭКРАН: КАТЕГОРИИ ПРОМБЕЗОПАСНОСТИ -->
+<div id="screen-pb-categories" class="screen">
+  <div class="header">
+    <span class="back" onclick="showScreen('screen-home')">‹</span>
+    Тесты промбезопасность
+  </div>
+  <div class="body">
+    <div class="section-label">Выберите категорию</div>
+    <button class="reg-btn" onclick="showScreen('screen-pb-a1-modes')">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">А1. Основы промышленной безопасности</span>
+      <span class="reg-sub">211 вопросов</span>
+    </button>
+  </div>
+</div>
+
+<!-- ЭКРАН: ВЫБОР РЕЖИМА А1 -->
+<div id="screen-pb-a1-modes" class="screen">
+  <div class="header">
+    <span class="back" onclick="showScreen('screen-pb-categories')">‹</span>
+    А1. Основы ПБ
+  </div>
+  <div class="body">
+    <button class="reg-btn" onclick="startA1RandomTest()">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">🎲 Случайный билет</span>
+      <span class="reg-sub">20 вопросов · 20 минут · зачёт от 18/20</span>
+    </button>
+    <button class="reg-btn" onclick="showScreen('screen-pb-a1-ranges')">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">📖 Режим изучения</span>
+      <span class="reg-sub">Все 211 вопросов с пояснениями</span>
+    </button>
+  </div>
+</div>
+
+<!-- ЭКРАН: ВЫБОР ДИАПАЗОНА ДЛЯ ИЗУЧЕНИЯ -->
+<div id="screen-pb-a1-ranges" class="screen">
+  <div class="header">
+    <span class="back" onclick="showScreen('screen-pb-a1-modes')">‹</span>
+    Режим изучения
+  </div>
+  <div class="body">
+    <div class="section-label">Выберите диапазон вопросов</div>
+    <button class="reg-btn" onclick="startStudyMode(1,40)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 1 – 40</span>
+    </button>
+    <button class="reg-btn" onclick="startStudyMode(41,80)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 41 – 80</span>
+    </button>
+    <button class="reg-btn" onclick="startStudyMode(81,120)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 81 – 120</span>
+    </button>
+    <button class="reg-btn" onclick="startStudyMode(121,160)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 121 – 160</span>
+    </button>
+    <button class="reg-btn" onclick="startStudyMode(161,200)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 161 – 200</span>
+    </button>
+    <button class="reg-btn" onclick="startStudyMode(201,211)">
+      <span class="reg-arrow">›</span>
+      <span class="reg-title">Вопросы 201 – 211</span>
+    </button>
+  </div>
+</div>
+
+<!-- ЭКРАН: РЕЖИМ ИЗУЧЕНИЯ (КАРТОЧКИ) -->
+<div id="screen-pb-study" class="screen">
+  <div class="header">
+    <span class="back" onclick="showScreen('screen-pb-a1-ranges')">‹</span>
+    Изучение
+    <span class="progress-right" id="study-progress"></span>
+  </div>
+  <div class="body">
+    <div class="q-text" id="study-q-text"></div>
+    <div class="q-hint" id="study-q-hint"></div>
+    <div id="study-options-wrap"></div>
+    <div class="comment-box" id="study-comment">
+      <div class="comment-label">Обоснование</div>
+      <div id="study-comment-text"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-home" id="study-prev" onclick="studyPrev()">← Назад</button>
+      <button class="btn-next" id="study-next" onclick="studyNext()">Далее →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН: ЗАГРУЗКА -->
 <div id="screen-loading" class="screen">
   <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
   <div class="body">
@@ -202,7 +328,7 @@
   </div>
 </div>
 
-<!-- ЭКРАН 3: ВОПРОС -->
+<!-- ЭКРАН: ВОПРОС (тест) -->
 <div id="screen-quiz" class="screen">
   <div class="header">
     <span class="back" onclick="confirmExit()">‹</span>
@@ -219,11 +345,15 @@
     <div class="q-text" id="q-text"></div>
     <div class="q-hint" id="q-hint"></div>
     <div id="options-wrap"></div>
+    <div class="comment-box" id="q-comment">
+      <div class="comment-label">Обоснование</div>
+      <div id="q-comment-text"></div>
+    </div>
     <button class="btn-next" id="btn-next" disabled onclick="nextQuestion()">Следующий вопрос →</button>
   </div>
 </div>
 
-<!-- ЭКРАН 4: РЕЗУЛЬТАТ -->
+<!-- ЭКРАН: РЕЗУЛЬТАТ -->
 <div id="screen-result" class="screen">
   <div class="header">🏆 Результат</div>
   <div class="body">
@@ -266,13 +396,40 @@
   let currentSheet = '';
   let currentTestName = '';
 
+  // Режим теста: 'standard' (регламенты) или 'a1' (промбезопасность)
+  let quizMode = 'standard';
+  let passThreshold = 80;
+  let timeLimitSeconds = 600;
+  let answered = false;
+  let exitScreen = 'screen-home';
+
+  // Режим изучения
+  let a1Questions = [];
+  let studyIndex = 0;
+
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
+  // Проверка ФИО перед переходом в раздел промбезопасности
+  function goToPB() {
+    const fioInput = document.getElementById('fio-input');
+    const fioError = document.getElementById('fio-error');
+    const fio = fioInput.value.trim();
+    if (!fio) {
+      fioError.style.display = 'block';
+      fioInput.focus();
+      return;
+    }
+    fioError.style.display = 'none';
+    employeeName = fio;
+    showScreen('screen-pb-categories');
+  }
+
+  // ===================== ОБЫЧНЫЕ ТЕСТЫ (РЕГЛАМЕНТЫ) =====================
+
   async function startTest(sheet, testName) {
-    // Проверяем ФИО
     const fioInput = document.getElementById('fio-input');
     const fioError = document.getElementById('fio-error');
     const fio = fioInput.value.trim();
@@ -287,6 +444,11 @@
 
     currentSheet = sheet;
     currentTestName = testName;
+    quizMode = 'standard';
+    passThreshold = 80;
+    timeLimitSeconds = 600;
+    exitScreen = 'screen-home';
+
     showScreen('screen-loading');
 
     try {
@@ -300,20 +462,56 @@
       }
 
       currentQuestions = data.questions;
-      currentIndex = 0;
-      score = 0;
-      timeLeft = 600;
-      startTime = new Date();
-
-      document.getElementById('quiz-title').textContent = testName;
-      showScreen('screen-quiz');
-      startTimer();
-      renderQuestion();
+      beginQuiz(testName);
 
     } catch(e) {
       alert('Ошибка соединения. Проверьте интернет.');
       showScreen('screen-home');
     }
+  }
+
+  // ===================== ПРОМБЕЗОПАСНОСТЬ: СЛУЧАЙНЫЙ БИЛЕТ =====================
+
+  async function startA1RandomTest() {
+    currentSheet = 'А1_random';
+    currentTestName = 'А1. Основы промышленной безопасности (случайный билет)';
+    quizMode = 'a1';
+    passThreshold = 90;
+    timeLimitSeconds = 1200;
+    exitScreen = 'screen-pb-a1-modes';
+
+    showScreen('screen-loading');
+
+    try {
+      const res = await fetch(`${API_URL}?action=getA1Questions&mode=random`);
+      const data = await res.json();
+
+      if (!data.success || !data.questions || !data.questions.length) {
+        alert('Ошибка загрузки вопросов. Попробуйте позже.');
+        showScreen('screen-pb-a1-modes');
+        return;
+      }
+
+      currentQuestions = data.questions;
+      beginQuiz(currentTestName);
+
+    } catch(e) {
+      alert('Ошибка соединения. Проверьте интернет.');
+      showScreen('screen-pb-a1-modes');
+    }
+  }
+
+  function beginQuiz(testName) {
+    currentIndex = 0;
+    score = 0;
+    timeLeft = timeLimitSeconds;
+    answered = false;
+    startTime = new Date();
+
+    document.getElementById('quiz-title').textContent = testName;
+    showScreen('screen-quiz');
+    startTimer();
+    renderQuestion();
   }
 
   function startTimer() {
@@ -340,12 +538,16 @@
   function renderQuestion() {
     const q = currentQuestions[currentIndex];
     selectedAnswers = [];
+    answered = false;
     const total = currentQuestions.length;
 
     document.getElementById('progress-fill').style.width = (currentIndex / total * 100) + '%';
     document.getElementById('progress-text').textContent = `ВОПРОС ${currentIndex + 1} / ${total}`;
     document.getElementById('q-text').textContent = q.question;
     document.getElementById('q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
+
+    const commentBox = document.getElementById('q-comment');
+    commentBox.style.display = 'none';
 
     const wrap = document.getElementById('options-wrap');
     wrap.innerHTML = '';
@@ -359,7 +561,11 @@
 
     const nb = document.getElementById('btn-next');
     nb.disabled = true;
-    nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
+    if (quizMode === 'a1') {
+      nb.textContent = 'Ответить';
+    } else {
+      nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
+    }
   }
 
   function selectOption(btn, num, type) {
@@ -375,7 +581,7 @@
     document.getElementById('btn-next').disabled = selectedAnswers.length === 0;
   }
 
-  function nextQuestion() {
+  function checkAnswer() {
     const q = currentQuestions[currentIndex];
     const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
     const user = [...selectedAnswers].sort();
@@ -387,20 +593,47 @@
       if (correct.includes(num)) { btn.classList.add('correct'); btn.classList.remove('selected'); }
       else if (selectedAnswers.includes(num)) { btn.classList.add('wrong'); btn.classList.remove('selected'); }
     });
-    document.getElementById('btn-next').disabled = true;
 
-    setTimeout(() => {
-      currentIndex++;
-      if (currentIndex >= currentQuestions.length) finishTest();
-      else renderQuestion();
-    }, 800);
+    if (quizMode === 'a1' && q.comment) {
+      const commentBox = document.getElementById('q-comment');
+      document.getElementById('q-comment-text').textContent = q.comment;
+      commentBox.style.display = 'block';
+    }
+  }
+
+  function nextQuestion() {
+    const total = currentQuestions.length;
+
+    if (quizMode === 'a1' && !answered) {
+      checkAnswer();
+      answered = true;
+      const nb = document.getElementById('btn-next');
+      nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
+      nb.disabled = false;
+      return;
+    }
+
+    if (quizMode !== 'a1') {
+      checkAnswer();
+      document.getElementById('btn-next').disabled = true;
+      setTimeout(() => { advance(); }, 800);
+      return;
+    }
+
+    advance();
+  }
+
+  function advance() {
+    currentIndex++;
+    if (currentIndex >= currentQuestions.length) finishTest();
+    else renderQuestion();
   }
 
   async function finishTest() {
     clearInterval(timerInterval);
     const total = currentQuestions.length;
     const percent = Math.round(score / total * 100);
-    const passed = percent >= 80;
+    const passed = percent >= passThreshold;
     const elapsed = getElapsed();
 
     document.getElementById('result-score').textContent = `${score} / ${total}`;
@@ -413,6 +646,9 @@
     document.getElementById('res-time').textContent = elapsed;
 
     showScreen('screen-result');
+
+    // Результаты А1 (промбезопасность) не сохраняются
+    if (quizMode === 'a1') return;
 
     try {
       await fetch(API_URL, {
@@ -430,12 +666,94 @@
     } catch(e) {}
   }
 
-  function retryTest() { startTest(currentSheet, currentTestName); }
-  function goHome() { clearInterval(timerInterval); showScreen('screen-home'); }
+  function retryTest() {
+    if (quizMode === 'a1') {
+      startA1RandomTest();
+    } else {
+      startTest(currentSheet, currentTestName);
+    }
+  }
+
+  function goHome() {
+    clearInterval(timerInterval);
+    showScreen('screen-home');
+  }
+
   function confirmExit() {
     if (confirm('Выйти из теста? Прогресс будет потерян.')) {
       clearInterval(timerInterval);
-      showScreen('screen-home');
+      showScreen(exitScreen);
+    }
+  }
+
+  // ===================== РЕЖИМ ИЗУЧЕНИЯ =====================
+
+  async function startStudyMode(start, end) {
+    showScreen('screen-loading');
+    try {
+      const res = await fetch(`${API_URL}?action=getA1Questions&mode=study&start=${start}&end=${end}`);
+      const data = await res.json();
+
+      if (!data.success || !data.questions || !data.questions.length) {
+        alert('Ошибка загрузки вопросов. Попробуйте позже.');
+        showScreen('screen-pb-a1-ranges');
+        return;
+      }
+
+      a1Questions = data.questions;
+      studyIndex = 0;
+      showScreen('screen-pb-study');
+      renderStudyCard();
+
+    } catch(e) {
+      alert('Ошибка соединения. Проверьте интернет.');
+      showScreen('screen-pb-a1-ranges');
+    }
+  }
+
+  function renderStudyCard() {
+    const q = a1Questions[studyIndex];
+    document.getElementById('study-progress').textContent = `Вопрос ${q.id} из 211`;
+    document.getElementById('study-q-text').textContent = q.question;
+    document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Несколько правильных ответов' : '';
+
+    const correct = String(q.correct).split(',').map(s => parseInt(s.trim()));
+    const wrap = document.getElementById('study-options-wrap');
+    wrap.innerHTML = '';
+    q.answers.forEach((ans, i) => {
+      const div = document.createElement('div');
+      div.className = 'option static';
+      if (correct.includes(i + 1)) div.classList.add('correct');
+      div.textContent = ans;
+      wrap.appendChild(div);
+    });
+
+    const commentBox = document.getElementById('study-comment');
+    if (q.comment) {
+      commentBox.style.display = 'block';
+      document.getElementById('study-comment-text').textContent = q.comment;
+    } else {
+      commentBox.style.display = 'none';
+    }
+
+    document.getElementById('study-prev').disabled = studyIndex === 0;
+    document.getElementById('study-next').textContent =
+      studyIndex === a1Questions.length - 1 ? 'Завершить' : 'Далее →';
+  }
+
+  function studyPrev() {
+    if (studyIndex > 0) {
+      studyIndex--;
+      renderStudyCard();
+    }
+  }
+
+  function studyNext() {
+    if (studyIndex < a1Questions.length - 1) {
+      studyIndex++;
+      renderStudyCard();
+    } else {
+      showScreen('screen-pb-a1-ranges');
     }
   }
 </script>
