@@ -7,230 +7,108 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
-      color: #1a1a1a;
-      min-height: 100vh;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
     .screen { display: none; min-height: 100vh; flex-direction: column; }
     .screen.active { display: flex; }
-
-    .header {
-      background: #1a1a1a;
-      color: #fff;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
+    .header { background: #1a1a1a; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
     .header .back { cursor: pointer; font-size: 22px; line-height: 1; padding-right: 4px; }
     .header .timer { margin-left: auto; font-size: 13px; color: #aaa; font-weight: 400; }
     .header .progress-right { margin-left: auto; font-size: 12px; color: #aaa; font-weight: 400; }
-
     .body { padding: 20px 16px; flex: 1; }
-
     .app-logo { text-align: center; padding: 28px 0 20px; }
-    .app-logo .logo-icon {
-      width: 56px; height: 56px;
-      background: #1a1a1a;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px;
-      font-size: 26px;
-    }
+    .app-logo .logo-icon { width: 56px; height: 56px; background: #1a1a1a; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 26px; }
     .app-logo h1 { font-size: 17px; font-weight: 500; letter-spacing: 0.5px; }
     .app-logo p { font-size: 13px; color: #888; margin-top: 4px; }
-
-    .section-label {
-      font-size: 11px; color: #888;
-      text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 8px;
-    }
-
+    .section-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
     .fio-wrap { margin-bottom: 20px; }
-    .fio-input {
-      width: 100%; padding: 12px 14px;
-      border: 0.5px solid #ddd; border-radius: 10px;
-      font-size: 14px; background: #fff;
-      color: #1a1a1a; outline: none;
-    }
+    .fio-input { width: 100%; padding: 12px 14px; border: 0.5px solid #ddd; border-radius: 10px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; }
     .fio-input:focus { border-color: #1a1a1a; }
     .fio-error { color: #cc3333; font-size: 12px; margin-top: 6px; display: none; }
-
-    .reg-btn {
-      display: block; width: 100%;
-      background: #fff; border: 0.5px solid #ddd;
-      border-radius: 10px; padding: 14px 16px;
-      margin-bottom: 10px; text-align: left; cursor: pointer;
-    }
+    .reg-btn { display: block; width: 100%; background: #fff; border: 0.5px solid #ddd; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; text-align: left; cursor: pointer; }
     .reg-btn:active { background: #f0f0f0; }
     .reg-btn .reg-title { font-size: 14px; font-weight: 500; color: #1a1a1a; display: block; }
     .reg-btn .reg-sub { font-size: 12px; color: #888; margin-top: 3px; display: block; }
     .reg-btn .reg-arrow { float: right; color: #bbb; font-size: 18px; margin-top: -2px; }
-
-    .section-divider {
-      height: 1px; background: #e5e5e5;
-      margin: 18px 0;
-    }
-
+    .section-divider { height: 1px; background: #e5e5e5; margin: 18px 0; }
     .progress-wrap { margin-bottom: 14px; }
     .progress-bar { height: 2px; background: #e0e0e0; border-radius: 2px; }
     .progress-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width 0.3s; }
     .progress-text { font-size: 11px; color: #888; margin-top: 6px; letter-spacing: 0.3px; }
-
     .q-text { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1.55; margin-bottom: 6px; }
     .q-hint { font-size: 12px; color: #888; margin-bottom: 16px; font-style: italic; }
-
-    .option {
-      display: flex; align-items: flex-start; gap: 10px;
-      width: 100%;
-      background: #fff; border: 0.5px solid #ddd;
-      border-radius: 8px; padding: 11px 13px;
-      margin-bottom: 8px; font-size: 13px;
-      color: #1a1a1a; text-align: left; cursor: pointer;
-      transition: all 0.15s; line-height: 1.4;
-    }
+    .option { display: flex; align-items: flex-start; gap: 10px; width: 100%; background: #fff; border: 0.5px solid #ddd; border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; font-size: 13px; color: #1a1a1a; text-align: left; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
     .option:active { background: #f0f0f0; }
     .option.selected { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .option.correct { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .option.correct-green { background: #2e7d32; color: #fff; border-color: #2e7d32; }
     .option.wrong { background: #ffecec; color: #cc3333; border-color: #ffcccc; }
     .option.static { cursor: default; }
-
     .option-text { flex: 1; }
-    .option-indicator {
-      flex-shrink: 0; box-sizing: border-box;
-      width: 16px; height: 16px;
-      border: 1.5px solid #ccc;
-      margin-top: 1px;
-      position: relative;
-    }
+    .option-indicator { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 1.5px solid #ccc; margin-top: 1px; position: relative; }
     .option-indicator.radio { border-radius: 50%; }
     .option-indicator.checkbox { border-radius: 4px; }
-    .option-indicator.radio::after {
-      content: ''; position: absolute;
-      top: 50%; left: 50%;
-      width: 8px; height: 8px; border-radius: 50%;
-      background: currentColor;
-      transform: translate(-50%, -50%) scale(0);
-      transition: transform 0.15s;
-    }
-    .option-indicator.checkbox::after {
-      content: '✕'; position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      font-size: 11px; font-weight: 700; line-height: 1;
-      transition: transform 0.15s;
-    }
-    .option.selected .option-indicator,
-    .option.correct .option-indicator,
-    .option.correct-green .option-indicator,
-    .option.wrong .option-indicator {
-      border-color: currentColor;
-    }
-    .option.selected .option-indicator::after,
-    .option.correct .option-indicator::after,
-    .option.correct-green .option-indicator::after,
-    .option.wrong .option-indicator::after {
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .result-label {
-      font-size: 13px; font-weight: 600;
-      padding: 10px 12px; border-radius: 8px;
-      margin-bottom: 10px; text-align: center;
-      display: none;
-    }
+    .option-indicator.radio::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; border-radius: 50%; background: currentColor; transform: translate(-50%, -50%) scale(0); transition: transform 0.15s; }
+    .option-indicator.checkbox::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 11px; font-weight: 700; line-height: 1; transition: transform 0.15s; }
+    .option.selected .option-indicator, .option.correct .option-indicator, .option.correct-green .option-indicator, .option.wrong .option-indicator { border-color: currentColor; }
+    .option.selected .option-indicator::after, .option.correct .option-indicator::after, .option.correct-green .option-indicator::after, .option.wrong .option-indicator::after { transform: translate(-50%, -50%) scale(1); }
+    .result-label { font-size: 13px; font-weight: 600; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; text-align: center; display: none; }
     .result-label.correct { background: #e8f5e9; color: #2e7d32; }
     .result-label.incorrect { background: #ffecec; color: #cc3333; }
-
-    .comment-box {
-      background: #f5f5f5; border: 0.5px solid #e5e5e5;
-      border-radius: 8px; padding: 12px 13px;
-      margin-top: 4px; margin-bottom: 4px;
-      font-size: 12px; color: #666; line-height: 1.5;
-      display: none;
-    }
-    .comment-box .comment-label {
-      font-size: 11px; text-transform: uppercase;
-      letter-spacing: 0.6px; color: #999;
-      margin-bottom: 4px; font-weight: 500;
-    }
-
-    .btn-next {
-      display: block; width: 100%;
-      background: #1a1a1a; color: #fff;
-      border: none; border-radius: 8px;
-      padding: 13px; font-size: 14px; font-weight: 500;
-      cursor: pointer; margin-top: 16px;
-    }
+    .comment-box { background: #f5f5f5; border: 0.5px solid #e5e5e5; border-radius: 8px; padding: 12px 13px; margin-top: 4px; margin-bottom: 4px; font-size: 12px; color: #666; line-height: 1.5; display: none; }
+    .comment-box .comment-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: #999; margin-bottom: 4px; font-weight: 500; }
+    .btn-next { display: block; width: 100%; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 16px; }
     .btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
-
     .result-wrap { text-align: center; padding: 24px 0 20px; }
     .result-score-big { font-size: 52px; font-weight: 500; color: #1a1a1a; line-height: 1; }
     .result-total { font-size: 14px; color: #888; margin-top: 4px; }
-    .result-badge {
-      display: inline-block; margin-top: 12px;
-      padding: 5px 16px; border-radius: 6px;
-      font-size: 13px; font-weight: 500;
-    }
+    .result-badge { display: inline-block; margin-top: 12px; padding: 5px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; }
     .result-badge.pass { background: #e8e8e8; color: #1a1a1a; }
     .result-badge.fail { background: #ffecec; color: #cc3333; }
-
-    .result-details {
-      background: #fff; border: 0.5px solid #ddd;
-      border-radius: 10px; margin-top: 20px; overflow: hidden;
-    }
-    .result-row {
-      display: flex; justify-content: space-between;
-      padding: 11px 16px; font-size: 13px;
-      border-bottom: 0.5px solid #f0f0f0;
-    }
+    .result-details { background: #fff; border: 0.5px solid #ddd; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+    .result-row { display: flex; justify-content: space-between; padding: 11px 16px; font-size: 13px; border-bottom: 0.5px solid #f0f0f0; }
     .result-row:last-child { border-bottom: none; }
     .result-row span:first-child { color: #888; }
     .result-row span:last-child { font-weight: 500; text-align: right; padding-left: 12px; }
-
-    .btn-retry {
-      display: block; width: 100%;
-      background: #1a1a1a; color: #fff;
-      border: none; border-radius: 8px;
-      padding: 13px; font-size: 14px; font-weight: 500;
-      cursor: pointer; margin-top: 16px;
-    }
-    .btn-home {
-      display: block; width: 100%;
-      background: #fff; color: #1a1a1a;
-      border: 0.5px solid #ddd; border-radius: 8px;
-      padding: 13px; font-size: 14px;
-      cursor: pointer; margin-top: 10px;
-    }
+    .btn-retry { display: block; width: 100%; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 16px; }
+    .btn-home { display: block; width: 100%; background: #fff; color: #1a1a1a; border: 0.5px solid #ddd; border-radius: 8px; padding: 13px; font-size: 14px; cursor: pointer; margin-top: 10px; }
     .btn-home:disabled { opacity: 0.35; cursor: not-allowed; }
-
     .nav-row { display: flex; gap: 8px; margin-top: 16px; }
     .nav-row .btn-home, .nav-row .btn-next { margin-top: 0; flex: 1; }
-
-    .loading {
-      text-align: center; padding: 60px 0;
-      color: #888; font-size: 14px;
-    }
-    .spinner {
-      width: 28px; height: 28px;
-      border: 2px solid #e0e0e0;
-      border-top-color: #1a1a1a;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 12px;
-    }
+    .loading { text-align: center; padding: 60px 0; color: #888; font-size: 14px; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #e0e0e0; border-top-color: #1a1a1a; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* FILLIN */
+    .fillin-text { font-size: 14px; color: #1a1a1a; line-height: 1.6; margin-bottom: 12px; background: #fff; border: 0.5px solid #ddd; border-radius: 8px; padding: 12px; }
+    .fillin-input { width: 100%; padding: 12px 14px; border: 0.5px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; }
+    .fillin-input:focus { border-color: #1a1a1a; }
+    .fillin-correct { background: #e8f5e9; border: 0.5px solid #2e7d32; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #2e7d32; margin-top: 8px; display: none; }
+
+    /* MATCHING */
+    .match-wrap { margin-bottom: 8px; }
+    .match-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .match-left { flex: 1; background: #f0f0f0; border: 0.5px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #1a1a1a; line-height: 1.4; }
+    .match-select { flex: 1; padding: 10px 12px; border: 0.5px solid #ddd; border-radius: 8px; font-size: 13px; background: #fff; color: #1a1a1a; outline: none; cursor: pointer; }
+    .match-row.correct .match-left { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .match-row.correct .match-select { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .match-row.wrong .match-left { background: #ffecec; border-color: #cc3333; color: #cc3333; }
+    .match-row.wrong .match-select { background: #ffecec; border-color: #cc3333; color: #cc3333; }
+
+    /* ORDERING */
+    .order-list { margin-bottom: 8px; }
+    .order-item { display: flex; align-items: center; gap: 10px; background: #fff; border: 0.5px solid #ddd; border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; font-size: 13px; color: #1a1a1a; cursor: grab; line-height: 1.4; user-select: none; }
+    .order-item:active { cursor: grabbing; }
+    .order-item.dragging { opacity: 0.4; }
+    .order-item.drag-over { border-color: #1a1a1a; border-style: dashed; }
+    .order-item.correct-order { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .order-item.wrong-order { background: #ffecec; border-color: #cc3333; color: #cc3333; }
+    .drag-handle { color: #bbb; font-size: 16px; flex-shrink: 0; }
+    .order-num { color: #888; font-size: 12px; flex-shrink: 0; min-width: 18px; }
   </style>
 </head>
 <body>
 
-<!-- ЭКРАН 1: ГЛАВНАЯ -->
+<!-- ГЛАВНАЯ -->
 <div id="screen-home" class="screen active">
   <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
   <div class="body">
@@ -239,134 +117,119 @@
       <h1>ТЕСТИРОВАНИЕ ACADEX</h1>
       <p>Проверка знаний регламентов</p>
     </div>
-
     <div class="fio-wrap">
       <div class="section-label">Ваше ФИО</div>
-      <input type="text" id="fio-input" class="fio-input"
-        placeholder="Иванов Иван Иванович">
+      <input type="text" id="fio-input" class="fio-input" placeholder="Иванов Иван Иванович">
       <div class="fio-error" id="fio-error">Пожалуйста, введите ФИО</div>
     </div>
-
     <div class="section-label">Выберите регламент</div>
-
     <button class="reg-btn" onclick="startTest('Вопросы_Регламент', 'Общий регламент работы')">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Общий регламент работы</span>
-      <span class="reg-sub">20 вопросов · 10 минут</span>
+      <span class="reg-arrow">›</span><span class="reg-title">Общий регламент работы</span><span class="reg-sub">20 вопросов · 10 минут</span>
     </button>
     <button class="reg-btn" onclick="startTest('Вопросы_Культура', 'Корпоративная культура')">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Корпоративная культура</span>
-      <span class="reg-sub">20 вопросов · 10 минут</span>
+      <span class="reg-arrow">›</span><span class="reg-title">Корпоративная культура</span><span class="reg-sub">20 вопросов · 10 минут</span>
     </button>
     <button class="reg-btn" onclick="startTest('Вопросы_BIM', 'BIM-регламент')">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">BIM-регламент</span>
-      <span class="reg-sub">20 вопросов · 10 минут</span>
+      <span class="reg-arrow">›</span><span class="reg-title">BIM-регламент</span><span class="reg-sub">20 вопросов · 10 минут</span>
     </button>
-
     <div class="section-divider"></div>
-
     <div class="section-label">Дополнительно</div>
-    <button class="reg-btn" onclick="goToPB()">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">🦺 Тесты промбезопасность</span>
-      <span class="reg-sub">База вопросов для подготовки</span>
+    <button class="reg-btn" onclick="goToSection('screen-pb-categories')">
+      <span class="reg-arrow">›</span><span class="reg-title">🦺 Тесты промбезопасность</span><span class="reg-sub">База вопросов для подготовки</span>
+    </button>
+    <button class="reg-btn" onclick="goToSection('screen-noprize-categories')">
+      <span class="reg-arrow">›</span><span class="reg-title">📐 Тесты НОПРИЗ</span><span class="reg-sub">Квалификационные тесты</span>
     </button>
   </div>
 </div>
 
-<!-- ЭКРАН: КАТЕГОРИИ ПРОМБЕЗОПАСНОСТИ -->
+<!-- ПБ: КАТЕГОРИИ -->
 <div id="screen-pb-categories" class="screen">
-  <div class="header">
-    <span class="back" onclick="showScreen('screen-home')">‹</span>
-    Тесты промбезопасность
-  </div>
+  <div class="header"><span class="back" onclick="showScreen('screen-home')">‹</span>Тесты промбезопасность</div>
   <div class="body">
     <div class="section-label">Выберите категорию</div>
     <button class="reg-btn" onclick="showScreen('screen-pb-a1-modes')">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">А1. Основы промышленной безопасности</span>
-      <span class="reg-sub">211 вопросов</span>
+      <span class="reg-arrow">›</span><span class="reg-title">А1. Основы промышленной безопасности</span><span class="reg-sub">211 вопросов</span>
     </button>
   </div>
 </div>
 
-<!-- ЭКРАН: ВЫБОР РЕЖИМА А1 -->
+<!-- ПБ А1: РЕЖИМЫ -->
 <div id="screen-pb-a1-modes" class="screen">
-  <div class="header">
-    <span class="back" onclick="showScreen('screen-pb-categories')">‹</span>
-    А1. Основы ПБ
-  </div>
+  <div class="header"><span class="back" onclick="showScreen('screen-pb-categories')">‹</span>А1. Основы ПБ</div>
   <div class="body">
-    <button class="reg-btn" onclick="startA1RandomTest()">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">🎲 Случайный билет</span>
-      <span class="reg-sub">20 вопросов · 20 минут · зачёт от 18/20</span>
+    <button class="reg-btn" onclick="startSpecialTest('a1','random')">
+      <span class="reg-arrow">›</span><span class="reg-title">🎲 Случайный билет</span><span class="reg-sub">20 вопросов · 20 минут · зачёт от 18/20</span>
     </button>
     <button class="reg-btn" onclick="showScreen('screen-pb-a1-ranges')">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">📖 Режим изучения</span>
-      <span class="reg-sub">Все 211 вопросов с пояснениями</span>
+      <span class="reg-arrow">›</span><span class="reg-title">📖 Режим изучения</span><span class="reg-sub">Все 211 вопросов с пояснениями</span>
     </button>
   </div>
 </div>
 
-<!-- ЭКРАН: ВЫБОР ДИАПАЗОНА ДЛЯ ИЗУЧЕНИЯ -->
+<!-- ПБ А1: ДИАПАЗОНЫ -->
 <div id="screen-pb-a1-ranges" class="screen">
-  <div class="header">
-    <span class="back" onclick="showScreen('screen-pb-a1-modes')">‹</span>
-    Режим изучения
-  </div>
+  <div class="header"><span class="back" onclick="showScreen('screen-pb-a1-modes')">‹</span>Режим изучения — А1</div>
   <div class="body">
     <div class="section-label">Выберите диапазон вопросов</div>
-    <button class="reg-btn" onclick="startStudyMode(0)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 1 – 40</span>
-    </button>
-    <button class="reg-btn" onclick="startStudyMode(1)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 41 – 80</span>
-    </button>
-    <button class="reg-btn" onclick="startStudyMode(2)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 81 – 120</span>
-    </button>
-    <button class="reg-btn" onclick="startStudyMode(3)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 121 – 160</span>
-    </button>
-    <button class="reg-btn" onclick="startStudyMode(4)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 161 – 200</span>
-    </button>
-    <button class="reg-btn" onclick="startStudyMode(5)">
-      <span class="reg-arrow">›</span>
-      <span class="reg-title">Вопросы 201 – 211</span>
-    </button>
+    <button class="reg-btn" onclick="startStudyMode('a1',0)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 1 – 40</span></button>
+    <button class="reg-btn" onclick="startStudyMode('a1',1)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 41 – 80</span></button>
+    <button class="reg-btn" onclick="startStudyMode('a1',2)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 81 – 120</span></button>
+    <button class="reg-btn" onclick="startStudyMode('a1',3)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 121 – 160</span></button>
+    <button class="reg-btn" onclick="startStudyMode('a1',4)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 161 – 200</span></button>
+    <button class="reg-btn" onclick="startStudyMode('a1',5)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 201 – 211</span></button>
   </div>
 </div>
 
-<!-- ЭКРАН: БЛОК ЗАВЕРШЁН -->
-<div id="screen-pb-study-complete" class="screen">
-  <div class="header">
-    <span class="back" onclick="showScreen('screen-pb-a1-ranges')">‹</span>
-    Изучение
-  </div>
+<!-- НОПРИЗ: КАТЕГОРИИ -->
+<div id="screen-noprize-categories" class="screen">
+  <div class="header"><span class="back" onclick="showScreen('screen-home')">‹</span>Тесты НОПРИЗ</div>
   <div class="body">
-    <div class="result-wrap">
-      <div class="result-score-big">✓</div>
-      <div class="result-total" id="study-complete-text">Блок завершён</div>
-    </div>
-    <button class="btn-retry" id="study-complete-next" onclick="goToNextRange()">Следующий блок →</button>
-    <button class="btn-home" onclick="showScreen('screen-pb-a1-ranges')">← К выбору диапазона</button>
+    <div class="section-label">Выберите квалификацию</div>
+    <button class="reg-btn" onclick="showScreen('screen-gip-modes')">
+      <span class="reg-arrow">›</span><span class="reg-title">Главный инженер проекта (7 уровень)</span><span class="reg-sub">501 вопрос</span>
+    </button>
   </div>
 </div>
 
-<!-- ЭКРАН: РЕЖИМ ИЗУЧЕНИЯ (КАРТОЧКИ) -->
-<div id="screen-pb-study" class="screen">
+<!-- ГИП: РЕЖИМЫ -->
+<div id="screen-gip-modes" class="screen">
+  <div class="header"><span class="back" onclick="showScreen('screen-noprize-categories')">‹</span>ГИП — 7 уровень</div>
+  <div class="body">
+    <button class="reg-btn" onclick="startSpecialTest('gip','random')">
+      <span class="reg-arrow">›</span><span class="reg-title">🎲 Случайный билет</span><span class="reg-sub">50 вопросов · 60 минут · зачёт от 36/50</span>
+    </button>
+    <button class="reg-btn" onclick="showScreen('screen-gip-ranges')">
+      <span class="reg-arrow">›</span><span class="reg-title">📖 Режим изучения</span><span class="reg-sub">Все 501 вопрос с пояснениями</span>
+    </button>
+  </div>
+</div>
+
+<!-- ГИП: ДИАПАЗОНЫ -->
+<div id="screen-gip-ranges" class="screen">
+  <div class="header"><span class="back" onclick="showScreen('screen-gip-modes')">‹</span>Режим изучения — ГИП</div>
+  <div class="body">
+    <div class="section-label">Выберите диапазон вопросов</div>
+    <button class="reg-btn" onclick="startStudyMode('gip',0)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 1 – 40</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',1)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 41 – 80</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',2)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 81 – 120</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',3)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 121 – 160</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',4)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 161 – 200</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',5)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 201 – 240</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',6)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 241 – 280</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',7)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 281 – 320</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',8)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 321 – 360</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',9)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 361 – 400</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',10)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 401 – 440</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',11)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 441 – 480</span></button>
+    <button class="reg-btn" onclick="startStudyMode('gip',12)"><span class="reg-arrow">›</span><span class="reg-title">Вопросы 481 – 501</span></button>
+  </div>
+</div>
+
+<!-- РЕЖИМ ИЗУЧЕНИЯ -->
+<div id="screen-study" class="screen">
   <div class="header">
-    <span class="back" onclick="showScreen('screen-pb-a1-ranges')">‹</span>
+    <span class="back" id="study-back-btn">‹</span>
     Изучение
     <span class="progress-right" id="study-progress"></span>
   </div>
@@ -375,10 +238,7 @@
     <div class="q-hint" id="study-q-hint"></div>
     <div id="study-options-wrap"></div>
     <div class="result-label" id="study-result-label"></div>
-    <div class="comment-box" id="study-comment">
-      <div class="comment-label">Обоснование</div>
-      <div id="study-comment-text"></div>
-    </div>
+    <div class="comment-box" id="study-comment"><div class="comment-label">Обоснование</div><div id="study-comment-text"></div></div>
     <button class="btn-next" id="study-answer-btn" disabled onclick="checkStudyAnswer()">Ответить</button>
     <div class="nav-row" id="study-nav-row" style="display:none">
       <button class="btn-home" id="study-prev" onclick="studyPrev()">← Назад</button>
@@ -387,15 +247,26 @@
   </div>
 </div>
 
-<!-- ЭКРАН: ЗАГРУЗКА -->
-<div id="screen-loading" class="screen">
-  <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
+<!-- БЛОК ЗАВЕРШЁН -->
+<div id="screen-study-complete" class="screen">
+  <div class="header">Изучение</div>
   <div class="body">
-    <div class="loading"><div class="spinner"></div>Загружаем вопросы...</div>
+    <div class="result-wrap">
+      <div class="result-score-big">✓</div>
+      <div class="result-total" id="study-complete-text">Блок завершён</div>
+    </div>
+    <button class="btn-retry" id="study-complete-next" onclick="goToNextRange()">Следующий блок →</button>
+    <button class="btn-home" id="study-complete-back" onclick="goToRangesScreen()">← К выбору диапазона</button>
   </div>
 </div>
 
-<!-- ЭКРАН: ВОПРОС (тест) -->
+<!-- ЗАГРУЗКА -->
+<div id="screen-loading" class="screen">
+  <div class="header">📋 ТЕСТИРОВАНИЕ ACADEX</div>
+  <div class="body"><div class="loading"><div class="spinner"></div>Загружаем вопросы...</div></div>
+</div>
+
+<!-- ВОПРОС (ТЕСТ) -->
 <div id="screen-quiz" class="screen">
   <div class="header">
     <span class="back" onclick="confirmExit()">‹</span>
@@ -404,24 +275,19 @@
   </div>
   <div class="body">
     <div class="progress-wrap">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
       <div class="progress-text" id="progress-text">ВОПРОС 1 / 20</div>
     </div>
     <div class="q-text" id="q-text"></div>
     <div class="q-hint" id="q-hint"></div>
     <div id="options-wrap"></div>
     <div class="result-label" id="q-result-label"></div>
-    <div class="comment-box" id="q-comment">
-      <div class="comment-label">Обоснование</div>
-      <div id="q-comment-text"></div>
-    </div>
+    <div class="comment-box" id="q-comment"><div class="comment-label">Обоснование</div><div id="q-comment-text"></div></div>
     <button class="btn-next" id="btn-next" disabled onclick="nextQuestion()">Следующий вопрос →</button>
   </div>
 </div>
 
-<!-- ЭКРАН: РЕЗУЛЬТАТ -->
+<!-- РЕЗУЛЬТАТ -->
 <div id="screen-result" class="screen">
   <div class="header">🏆 Результат</div>
   <div class="body">
@@ -431,10 +297,11 @@
       <div class="result-badge" id="result-badge"></div>
     </div>
     <div class="result-details">
-      <div class="result-row"><span>Регламент</span><span id="res-test-name"></span></div>
+      <div class="result-row"><span>Тест</span><span id="res-test-name"></span></div>
       <div class="result-row"><span>Сотрудник</span><span id="res-employee"></span></div>
       <div class="result-row"><span>Дата</span><span id="res-date"></span></div>
       <div class="result-row"><span>Затраченное время</span><span id="res-time"></span></div>
+      <div class="result-row"><span>Порог зачёта</span><span id="res-threshold"></span></div>
     </div>
     <button class="btn-retry" onclick="retryTest()">Пройти ещё раз</button>
     <button class="btn-home" onclick="goHome()">← На главную</button>
@@ -442,494 +309,574 @@
 </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxL3KDK7HZBIl3kS-PC1-Zvq_9S2t57hRlVMHg-71s4A0rKEeGt3WofEPNJCxgfbf4e/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxL3KDK7HZBIl3kS-PC1-Zvq_9S2t57hRlVMHg-71s4A0rKEeGt3WofEPNJCxgfbf4e/exec';
 
-  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-  if (tg) { tg.expand(); tg.ready(); }
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { tg.expand(); tg.ready(); }
+let telegramId = '—';
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) telegramId = tg.initDataUnsafe.user.id;
 
-  // Telegram ID если открыто через бота, иначе прочерк
-  let telegramId = '—';
-  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    telegramId = tg.initDataUnsafe.user.id;
-  }
+let employeeName = '';
+let currentQuestions = [], currentIndex = 0, score = 0;
+let selectedAnswers = [], timerInterval = null, timeLeft = 600;
+let startTime = null, currentSheet = '', currentTestName = '';
+let quizMode = 'standard', passThreshold = 80, passCount = 16;
+let timeLimitSeconds = 600, answered = false, exitScreen = 'screen-home';
 
-  let employeeName = '';
-  let currentQuestions = [];
-  let currentIndex = 0;
-  let score = 0;
-  let selectedAnswers = [];
-  let timerInterval = null;
-  let timeLeft = 600;
-  let startTime = null;
-  let currentSheet = '';
-  let currentTestName = '';
+// Диапазоны
+const A1_RANGES = [[1,40],[41,80],[81,120],[121,160],[161,200],[201,211]];
+const GIP_RANGES = [[1,40],[41,80],[81,120],[121,160],[161,200],[201,240],[241,280],[281,320],[321,360],[361,400],[401,440],[441,480],[481,501]];
+let studyQuestions = [], studyIndex = 0, studySelected = [];
+let currentRangeIndex = 0, currentStudySection = 'a1';
+let totalInSection = 211;
 
-  // Режим теста: 'standard' (регламенты) или 'a1' (промбезопасность)
-  let quizMode = 'standard';
-  let passThreshold = 80;
-  let timeLimitSeconds = 600;
-  let answered = false;
-  let exitScreen = 'screen-home';
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-  // Режим изучения
-  const A1_RANGES = [[1,40],[41,80],[81,120],[121,160],[161,200],[201,211]];
-  let a1Questions = [];
-  let studyIndex = 0;
-  let studySelected = [];
-  let currentRangeIndex = 0;
+function checkFIO() {
+  const fio = document.getElementById('fio-input').value.trim();
+  if (!fio) { document.getElementById('fio-error').style.display = 'block'; document.getElementById('fio-input').focus(); return false; }
+  document.getElementById('fio-error').style.display = 'none';
+  employeeName = fio;
+  return true;
+}
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+function goToSection(screen) {
+  if (!checkFIO()) return;
+  showScreen(screen);
+}
 
-  // Проверка ФИО перед переходом в раздел промбезопасности
-  function goToPB() {
-    const fioInput = document.getElementById('fio-input');
-    const fioError = document.getElementById('fio-error');
-    const fio = fioInput.value.trim();
-    if (!fio) {
-      fioError.style.display = 'block';
-      fioInput.focus();
-      return;
-    }
-    fioError.style.display = 'none';
-    employeeName = fio;
-    showScreen('screen-pb-categories');
-  }
+// ===== ОБЫЧНЫЕ ТЕСТЫ =====
+async function startTest(sheet, testName) {
+  if (!checkFIO()) return;
+  currentSheet = sheet; currentTestName = testName;
+  quizMode = 'standard'; passThreshold = 80; passCount = 16;
+  timeLimitSeconds = 600; exitScreen = 'screen-home';
+  showScreen('screen-loading');
+  try {
+    const res = await fetch(`${API_URL}?action=getQuestions&sheet=${encodeURIComponent(sheet)}`);
+    const data = await res.json();
+    if (!data.success || !data.questions || !data.questions.length) { alert('Ошибка загрузки вопросов.'); showScreen('screen-home'); return; }
+    currentQuestions = data.questions;
+    beginQuiz(testName);
+  } catch(e) { alert('Ошибка соединения.'); showScreen('screen-home'); }
+}
 
-  // ===================== ОБЫЧНЫЕ ТЕСТЫ (РЕГЛАМЕНТЫ) =====================
+// ===== СПЕЦИАЛЬНЫЕ ТЕСТЫ (А1, ГИП) =====
+async function startSpecialTest(section, mode) {
+  const isGip = section === 'gip';
+  currentStudySection = section;
+  currentTestName = isGip ? 'ГИП — 7 уровень квалификации' : 'А1. Основы промышленной безопасности';
+  quizMode = section;
+  passThreshold = isGip ? 72 : 90;
+  passCount = isGip ? 36 : 18;
+  timeLimitSeconds = isGip ? 3600 : 1200;
+  exitScreen = isGip ? 'screen-gip-modes' : 'screen-pb-a1-modes';
+  showScreen('screen-loading');
+  try {
+    const action = isGip ? 'getGIPQuestions' : 'getA1Questions';
+    const res = await fetch(`${API_URL}?action=${action}&mode=random`);
+    const data = await res.json();
+    if (!data.success || !data.questions || !data.questions.length) { alert('Ошибка загрузки вопросов.'); showScreen(exitScreen); return; }
+    currentQuestions = data.questions;
+    beginQuiz(currentTestName);
+  } catch(e) { alert('Ошибка соединения.'); showScreen(exitScreen); }
+}
 
-  async function startTest(sheet, testName) {
-    const fioInput = document.getElementById('fio-input');
-    const fioError = document.getElementById('fio-error');
-    const fio = fioInput.value.trim();
+function beginQuiz(testName) {
+  currentIndex = 0; score = 0; timeLeft = timeLimitSeconds;
+  answered = false; startTime = new Date();
+  document.getElementById('quiz-title').textContent = testName;
+  showScreen('screen-quiz');
+  startTimer();
+  renderQuestion();
+}
 
-    if (!fio) {
-      fioError.style.display = 'block';
-      fioInput.focus();
-      return;
-    }
-    fioError.style.display = 'none';
-    employeeName = fio;
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); finishTest(); } }, 1000);
+}
 
-    currentSheet = sheet;
-    currentTestName = testName;
-    quizMode = 'standard';
-    passThreshold = 80;
-    timeLimitSeconds = 600;
-    exitScreen = 'screen-home';
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60).toString().padStart(2,'0');
+  const s = (timeLeft % 60).toString().padStart(2,'0');
+  document.getElementById('timer').textContent = `⏱ ${m}:${s}`;
+}
 
-    showScreen('screen-loading');
+function getElapsed() {
+  const e = Math.floor((new Date() - startTime) / 1000);
+  return `${Math.floor(e/60).toString().padStart(2,'0')}:${(e%60).toString().padStart(2,'0')}`;
+}
 
-    try {
-      const res = await fetch(`${API_URL}?action=getQuestions&sheet=${encodeURIComponent(sheet)}`);
-      const data = await res.json();
+function renderQuestion() {
+  const q = currentQuestions[currentIndex];
+  selectedAnswers = []; answered = false;
+  const total = currentQuestions.length;
+  document.getElementById('progress-fill').style.width = (currentIndex / total * 100) + '%';
+  document.getElementById('progress-text').textContent = `ВОПРОС ${currentIndex + 1} / ${total}`;
+  document.getElementById('q-comment').style.display = 'none';
+  document.getElementById('q-result-label').style.display = 'none';
 
-      if (!data.success || !data.questions || !data.questions.length) {
-        alert('Ошибка загрузки вопросов. Попробуйте позже.');
-        showScreen('screen-home');
-        return;
-      }
+  const isSpecial = quizMode !== 'standard';
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
 
-      currentQuestions = data.questions;
-      beginQuiz(testName);
-
-    } catch(e) {
-      alert('Ошибка соединения. Проверьте интернет.');
-      showScreen('screen-home');
-    }
-  }
-
-  // ===================== ПРОМБЕЗОПАСНОСТЬ: СЛУЧАЙНЫЙ БИЛЕТ =====================
-
-  async function startA1RandomTest() {
-    currentSheet = 'А1_random';
-    currentTestName = 'А1. Основы промышленной безопасности (случайный билет)';
-    quizMode = 'a1';
-    passThreshold = 90;
-    timeLimitSeconds = 1200;
-    exitScreen = 'screen-pb-a1-modes';
-
-    showScreen('screen-loading');
-
-    try {
-      const res = await fetch(`${API_URL}?action=getA1Questions&mode=random`);
-      const data = await res.json();
-
-      if (!data.success || !data.questions || !data.questions.length) {
-        alert('Ошибка загрузки вопросов. Попробуйте позже.');
-        showScreen('screen-pb-a1-modes');
-        return;
-      }
-
-      currentQuestions = data.questions;
-      beginQuiz(currentTestName);
-
-    } catch(e) {
-      alert('Ошибка соединения. Проверьте интернет.');
-      showScreen('screen-pb-a1-modes');
-    }
-  }
-
-  function beginQuiz(testName) {
-    currentIndex = 0;
-    score = 0;
-    timeLeft = timeLimitSeconds;
-    answered = false;
-    startTime = new Date();
-
-    document.getElementById('quiz-title').textContent = testName;
-    showScreen('screen-quiz');
-    startTimer();
-    renderQuestion();
-  }
-
-  function startTimer() {
-    clearInterval(timerInterval);
-    updateTimerDisplay();
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      updateTimerDisplay();
-      if (timeLeft <= 0) { clearInterval(timerInterval); finishTest(); }
-    }, 1000);
-  }
-
-  function updateTimerDisplay() {
-    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-    const s = (timeLeft % 60).toString().padStart(2, '0');
-    document.getElementById('timer').textContent = `⏱ ${m}:${s}`;
-  }
-
-  function getElapsed() {
-    const e = Math.floor((new Date() - startTime) / 1000);
-    return `${Math.floor(e/60).toString().padStart(2,'0')}:${(e%60).toString().padStart(2,'0')}`;
-  }
-
-  function renderQuestion() {
-    const q = currentQuestions[currentIndex];
-    selectedAnswers = [];
-    answered = false;
-    const total = currentQuestions.length;
-
-    document.getElementById('progress-fill').style.width = (currentIndex / total * 100) + '%';
-    document.getElementById('progress-text').textContent = `ВОПРОС ${currentIndex + 1} / ${total}`;
+  if (q.type === 'fillin') {
+    renderFillin(q, wrap, 'quiz');
+  } else if (q.type === 'matching') {
+    renderMatching(q, wrap, 'quiz');
+  } else if (q.type === 'ordering') {
+    renderOrdering(q, wrap, 'quiz');
+  } else {
+    // single / multiple
     document.getElementById('q-text').textContent = q.question;
     document.getElementById('q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
-
-    document.getElementById('q-comment').style.display = 'none';
-    document.getElementById('q-result-label').style.display = 'none';
-
-    const wrap = document.getElementById('options-wrap');
-    wrap.innerHTML = '';
     q.answers.forEach((ans, i) => {
       const btn = document.createElement('button');
       btn.className = 'option';
-      const indicator = document.createElement('span');
-      indicator.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
-      const text = document.createElement('span');
-      text.className = 'option-text';
-      text.textContent = ans;
-      btn.appendChild(indicator);
-      btn.appendChild(text);
+      const ind = document.createElement('span');
+      ind.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
+      const txt = document.createElement('span');
+      txt.className = 'option-text'; txt.textContent = ans;
+      btn.appendChild(ind); btn.appendChild(txt);
       btn.onclick = () => selectOption(btn, i + 1, q.type);
       wrap.appendChild(btn);
     });
-
-    const nb = document.getElementById('btn-next');
-    nb.disabled = true;
-    if (quizMode === 'a1') {
-      nb.textContent = 'Ответить';
-    } else {
-      nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
-    }
   }
 
-  function selectOption(btn, num, type) {
-    if (type === 'single') {
-      document.querySelectorAll('#options-wrap .option').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedAnswers = [num];
-    } else {
-      btn.classList.toggle('selected');
-      if (btn.classList.contains('selected')) selectedAnswers.push(num);
-      else selectedAnswers = selectedAnswers.filter(a => a !== num);
-    }
-    document.getElementById('btn-next').disabled = selectedAnswers.length === 0;
+  const nb = document.getElementById('btn-next');
+  nb.disabled = true;
+  if (isSpecial) {
+    nb.textContent = 'Ответить';
+  } else {
+    nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
   }
+}
 
-  function checkAnswer() {
-    const q = currentQuestions[currentIndex];
+// ===== FILLIN =====
+function renderFillin(q, wrap, mode) {
+  const prefix = mode === 'quiz' ? 'q' : 'study';
+  document.getElementById(prefix === 'q' ? 'q-text' : 'study-q-text').textContent = '';
+  document.getElementById(prefix === 'q' ? 'q-hint' : 'study-q-hint').textContent = '';
+  const textDiv = document.createElement('div');
+  textDiv.className = 'fillin-text';
+  textDiv.textContent = q.question;
+  wrap.appendChild(textDiv);
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'fillin-input'; inp.placeholder = 'Введите ответ...'; inp.id = prefix + '-fillin-input';
+  inp.oninput = () => { document.getElementById(prefix === 'q' ? 'btn-next' : 'study-answer-btn').disabled = inp.value.trim().length === 0; };
+  wrap.appendChild(inp);
+  const correctDiv = document.createElement('div');
+  correctDiv.className = 'fillin-correct'; correctDiv.id = prefix + '-fillin-correct';
+  correctDiv.textContent = 'Правильный ответ: ' + q.correct;
+  wrap.appendChild(correctDiv);
+}
+
+function checkFillin(q, mode) {
+  const prefix = mode === 'quiz' ? 'q' : 'study';
+  const inp = document.getElementById(prefix + '-fillin-input');
+  const userVal = inp ? inp.value.trim().toLowerCase() : '';
+  const correctVal = q.correct.trim().toLowerCase();
+  const isCorrect = userVal === correctVal;
+  if (inp) inp.disabled = true;
+  const correctDiv = document.getElementById(prefix + '-fillin-correct');
+  if (correctDiv) correctDiv.style.display = 'block';
+  return isCorrect;
+}
+
+// ===== MATCHING =====
+function renderMatching(q, wrap, mode) {
+  const prefix = mode === 'quiz' ? 'q' : 'study';
+  document.getElementById(prefix === 'q' ? 'q-text' : 'study-q-text').textContent = q.question;
+  document.getElementById(prefix === 'q' ? 'q-hint' : 'study-q-hint').textContent = 'Установите соответствие';
+  const half = Math.ceil(q.answers.length / 2);
+  const leftItems = q.answers.slice(0, half);
+  const rightItems = q.answers.slice(half);
+  const matchWrap = document.createElement('div'); matchWrap.className = 'match-wrap';
+  leftItems.forEach((left, i) => {
+    const row = document.createElement('div'); row.className = 'match-row'; row.id = `match-row-${mode}-${i}`;
+    const leftDiv = document.createElement('div'); leftDiv.className = 'match-left'; leftDiv.textContent = left;
+    const sel = document.createElement('select'); sel.className = 'match-select'; sel.id = `match-sel-${mode}-${i}`;
+    const defOpt = document.createElement('option'); defOpt.value = ''; defOpt.textContent = '— выберите —'; sel.appendChild(defOpt);
+    rightItems.forEach((right, j) => {
+      const opt = document.createElement('option'); opt.value = j + 1; opt.textContent = right; sel.appendChild(opt);
+    });
+    sel.onchange = () => checkAllMatchSelected(mode, leftItems.length, prefix);
+    row.appendChild(leftDiv); row.appendChild(sel); matchWrap.appendChild(row);
+  });
+  wrap.appendChild(matchWrap);
+}
+
+function checkAllMatchSelected(mode, count, prefix) {
+  let allSelected = true;
+  for (let i = 0; i < count; i++) {
+    const sel = document.getElementById(`match-sel-${mode}-${i}`);
+    if (!sel || !sel.value) { allSelected = false; break; }
+  }
+  document.getElementById(prefix === 'q' ? 'btn-next' : 'study-answer-btn').disabled = !allSelected;
+}
+
+function checkMatching(q, mode) {
+  const half = Math.ceil(q.answers.length / 2);
+  const correctArr = q.correct.split(',').map(s => parseInt(s.trim()));
+  let isCorrect = true;
+  for (let i = 0; i < half; i++) {
+    const sel = document.getElementById(`match-sel-${mode}-${i}`);
+    const row = document.getElementById(`match-row-${mode}-${i}`);
+    if (sel) sel.disabled = true;
+    const userVal = sel ? parseInt(sel.value) : 0;
+    const correctVal = correctArr[i];
+    if (userVal !== correctVal) { isCorrect = false; if (row) row.classList.add('wrong'); }
+    else { if (row) row.classList.add('correct'); }
+  }
+  return isCorrect;
+}
+
+// ===== ORDERING =====
+function renderOrdering(q, wrap, mode) {
+  const prefix = mode === 'quiz' ? 'q' : 'study';
+  document.getElementById(prefix === 'q' ? 'q-text' : 'study-q-text').textContent = q.question;
+  document.getElementById(prefix === 'q' ? 'q-hint' : 'study-q-hint').textContent = 'Перетащите элементы в правильном порядке';
+  const list = document.createElement('div'); list.className = 'order-list'; list.id = `order-list-${mode}`;
+  const shuffled = [...q.answers].sort(() => Math.random() - 0.5);
+  shuffled.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'order-item'; div.draggable = true;
+    div.dataset.original = q.answers.indexOf(item) + 1;
+    const handle = document.createElement('span'); handle.className = 'drag-handle'; handle.textContent = '⋮⋮';
+    const num = document.createElement('span'); num.className = 'order-num'; num.textContent = (i+1) + '.';
+    const txt = document.createElement('span'); txt.textContent = item;
+    div.appendChild(handle); div.appendChild(num); div.appendChild(txt);
+    div.addEventListener('dragstart', dragStart);
+    div.addEventListener('dragover', dragOver);
+    div.addEventListener('drop', dragDrop);
+    div.addEventListener('dragend', dragEnd);
+    // Touch support
+    div.addEventListener('touchstart', touchStart, {passive: true});
+    div.addEventListener('touchmove', touchMove, {passive: false});
+    div.addEventListener('touchend', touchEnd);
+    list.appendChild(div);
+  });
+  wrap.appendChild(list);
+  document.getElementById(prefix === 'q' ? 'btn-next' : 'study-answer-btn').disabled = false;
+}
+
+// Drag & Drop
+let dragSrc = null;
+function dragStart(e) { dragSrc = this; this.classList.add('dragging'); }
+function dragOver(e) { e.preventDefault(); document.querySelectorAll('.order-item').forEach(i => i.classList.remove('drag-over')); this.classList.add('drag-over'); }
+function dragDrop(e) {
+  e.preventDefault();
+  if (dragSrc && dragSrc !== this) {
+    const list = this.parentNode;
+    const items = [...list.querySelectorAll('.order-item')];
+    const srcIdx = items.indexOf(dragSrc), dstIdx = items.indexOf(this);
+    if (srcIdx < dstIdx) list.insertBefore(dragSrc, this.nextSibling);
+    else list.insertBefore(dragSrc, this);
+    updateOrderNumbers(list);
+  }
+}
+function dragEnd() { this.classList.remove('dragging'); document.querySelectorAll('.order-item').forEach(i => i.classList.remove('drag-over')); }
+
+// Touch drag
+let touchItem = null, touchClone = null, touchStartY = 0;
+function touchStart(e) { touchItem = this; touchStartY = e.touches[0].clientY; this.classList.add('dragging'); }
+function touchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const list = touchItem.parentNode;
+  const items = [...list.querySelectorAll('.order-item:not(.dragging)')];
+  items.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (touch.clientY < mid) { list.insertBefore(touchItem, item); updateOrderNumbers(list); return; }
+  });
+}
+function touchEnd() { if (touchItem) { touchItem.classList.remove('dragging'); touchItem = null; } }
+
+function updateOrderNumbers(list) {
+  list.querySelectorAll('.order-item').forEach((item, i) => {
+    const num = item.querySelector('.order-num');
+    if (num) num.textContent = (i+1) + '.';
+  });
+}
+
+function checkOrdering(q, mode) {
+  const list = document.getElementById(`order-list-${mode}`);
+  if (!list) return false;
+  const items = list.querySelectorAll('.order-item');
+  const correctArr = q.correct.split(',').map(s => parseInt(s.trim()));
+  let isCorrect = true;
+  items.forEach((item, i) => {
+    const orig = parseInt(item.dataset.original);
+    item.draggable = false;
+    if (orig === correctArr[i]) item.classList.add('correct-order');
+    else { item.classList.add('wrong-order'); isCorrect = false; }
+  });
+  return isCorrect;
+}
+
+function selectOption(btn, num, type) {
+  if (type === 'single') {
+    document.querySelectorAll('#options-wrap .option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected'); selectedAnswers = [num];
+  } else {
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) selectedAnswers.push(num);
+    else selectedAnswers = selectedAnswers.filter(a => a !== num);
+  }
+  document.getElementById('btn-next').disabled = selectedAnswers.length === 0;
+}
+
+function checkQuizAnswer() {
+  const q = currentQuestions[currentIndex];
+  const isSpecial = quizMode !== 'standard';
+  let isCorrect = false;
+
+  if (q.type === 'fillin') {
+    isCorrect = checkFillin(q, 'quiz');
+  } else if (q.type === 'matching') {
+    isCorrect = checkMatching(q, 'quiz');
+  } else if (q.type === 'ordering') {
+    isCorrect = checkOrdering(q, 'quiz');
+  } else {
     const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
     const user = [...selectedAnswers].sort();
-    const isCorrect = JSON.stringify(correct) === JSON.stringify(user);
-    if (isCorrect) score++;
-
+    isCorrect = JSON.stringify(correct) === JSON.stringify(user);
     document.querySelectorAll('#options-wrap .option').forEach((btn, i) => {
       btn.onclick = null;
       const num = i + 1;
-      if (correct.includes(num)) {
-        btn.classList.add(quizMode === 'a1' ? 'correct-green' : 'correct');
-        btn.classList.remove('selected');
-      } else if (selectedAnswers.includes(num)) {
-        btn.classList.add('wrong');
-        btn.classList.remove('selected');
-      }
+      if (correct.includes(num)) { btn.classList.add(isSpecial ? 'correct-green' : 'correct'); btn.classList.remove('selected'); }
+      else if (selectedAnswers.includes(num)) { btn.classList.add('wrong'); btn.classList.remove('selected'); }
     });
+  }
 
-    if (quizMode === 'a1') {
-      const label = document.getElementById('q-result-label');
-      label.style.display = 'block';
-      if (isCorrect) {
-        label.textContent = '✓ Правильно';
-        label.className = 'result-label correct';
-      } else {
-        label.textContent = '✗ Неправильно';
-        label.className = 'result-label incorrect';
-      }
+  if (isCorrect) score++;
 
-      if (q.comment) {
-        document.getElementById('q-comment-text').textContent = q.comment;
-        document.getElementById('q-comment').style.display = 'block';
-      }
+  if (isSpecial) {
+    const label = document.getElementById('q-result-label');
+    label.style.display = 'block';
+    label.textContent = isCorrect ? '✓ Правильно' : '✗ Неправильно';
+    label.className = 'result-label ' + (isCorrect ? 'correct' : 'incorrect');
+    if (q.comment) {
+      document.getElementById('q-comment-text').textContent = q.comment;
+      document.getElementById('q-comment').style.display = 'block';
     }
   }
+  return isCorrect;
+}
 
-  function nextQuestion() {
-    const total = currentQuestions.length;
+function nextQuestion() {
+  const total = currentQuestions.length;
+  const isSpecial = quizMode !== 'standard';
 
-    if (quizMode === 'a1' && !answered) {
-      checkAnswer();
-      answered = true;
-      const nb = document.getElementById('btn-next');
-      nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
-      nb.disabled = false;
-      return;
-    }
-
-    if (quizMode !== 'a1') {
-      checkAnswer();
-      document.getElementById('btn-next').disabled = true;
-      setTimeout(() => { advance(); }, 800);
-      return;
-    }
-
-    advance();
+  if (isSpecial && !answered) {
+    checkQuizAnswer(); answered = true;
+    const nb = document.getElementById('btn-next');
+    nb.textContent = currentIndex < total - 1 ? 'Следующий вопрос →' : 'Завершить тест';
+    nb.disabled = false;
+    return;
   }
 
-  function advance() {
-    currentIndex++;
-    if (currentIndex >= currentQuestions.length) finishTest();
-    else renderQuestion();
+  if (!isSpecial) {
+    checkQuizAnswer();
+    document.getElementById('btn-next').disabled = true;
+    setTimeout(() => advance(), 800);
+    return;
   }
 
-  async function finishTest() {
-    clearInterval(timerInterval);
-    const total = currentQuestions.length;
-    const percent = Math.round(score / total * 100);
-    const passed = percent >= passThreshold;
-    const elapsed = getElapsed();
+  advance();
+}
 
-    document.getElementById('result-score').textContent = `${score} / ${total}`;
-    const badge = document.getElementById('result-badge');
-    badge.textContent = passed ? `${percent}% — Зачёт ✓` : `${percent}% — Не зачёт ✗`;
-    badge.className = 'result-badge ' + (passed ? 'pass' : 'fail');
-    document.getElementById('res-test-name').textContent = currentTestName;
-    document.getElementById('res-employee').textContent = employeeName;
-    document.getElementById('res-date').textContent = new Date().toLocaleDateString('ru-RU');
-    document.getElementById('res-time').textContent = elapsed;
+function advance() {
+  currentIndex++;
+  if (currentIndex >= currentQuestions.length) finishTest();
+  else renderQuestion();
+}
 
-    showScreen('screen-result');
+async function finishTest() {
+  clearInterval(timerInterval);
+  const total = currentQuestions.length;
+  const percent = Math.round(score / total * 100);
+  const passed = score >= passCount;
+  const elapsed = getElapsed();
 
-    // Результаты А1 (промбезопасность) не сохраняются
-    if (quizMode === 'a1') return;
+  document.getElementById('result-score').textContent = `${score} / ${total}`;
+  const badge = document.getElementById('result-badge');
+  badge.textContent = passed ? `${percent}% — Зачёт ✓` : `${percent}% — Не зачёт ✗`;
+  badge.className = 'result-badge ' + (passed ? 'pass' : 'fail');
+  document.getElementById('res-test-name').textContent = currentTestName;
+  document.getElementById('res-employee').textContent = employeeName;
+  document.getElementById('res-date').textContent = new Date().toLocaleDateString('ru-RU');
+  document.getElementById('res-time').textContent = elapsed;
+  document.getElementById('res-threshold').textContent = `${passCount} / ${total}`;
+  showScreen('screen-result');
 
-    try {
-      await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'saveResult',
-          name: employeeName,
-          telegramId: telegramId,
-          testName: currentTestName,
-          score: score,
-          total: total,
-          percent: percent
-        })
-      });
-    } catch(e) {}
-  }
+  if (quizMode !== 'standard') return;
 
-  function retryTest() {
-    if (quizMode === 'a1') {
-      startA1RandomTest();
-    } else {
-      startTest(currentSheet, currentTestName);
-    }
-  }
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveResult', name: employeeName, telegramId, testName: currentTestName, score, total, percent })
+    });
+  } catch(e) {}
+}
 
-  function goHome() {
-    clearInterval(timerInterval);
-    showScreen('screen-home');
-  }
+function retryTest() {
+  if (quizMode === 'gip') startSpecialTest('gip', 'random');
+  else if (quizMode === 'a1') startSpecialTest('a1', 'random');
+  else startTest(currentSheet, currentTestName);
+}
 
-  function confirmExit() {
-    if (confirm('Выйти из теста? Прогресс будет потерян.')) {
-      clearInterval(timerInterval);
-      showScreen(exitScreen);
-    }
-  }
+function goHome() { clearInterval(timerInterval); showScreen('screen-home'); }
+function confirmExit() {
+  if (confirm('Выйти из теста? Прогресс будет потерян.')) { clearInterval(timerInterval); showScreen(exitScreen); }
+}
 
-  // ===================== РЕЖИМ ИЗУЧЕНИЯ =====================
+// ===== РЕЖИМ ИЗУЧЕНИЯ =====
+const RANGES = { a1: A1_RANGES, gip: GIP_RANGES };
 
-  async function startStudyMode(rangeIndex) {
-    currentRangeIndex = rangeIndex;
-    const [start, end] = A1_RANGES[rangeIndex];
-    showScreen('screen-loading');
-    try {
-      const res = await fetch(`${API_URL}?action=getA1Questions&mode=study&start=${start}&end=${end}`);
-      const data = await res.json();
+async function startStudyMode(section, rangeIndex) {
+  currentStudySection = section;
+  currentRangeIndex = rangeIndex;
+  totalInSection = section === 'gip' ? 501 : 211;
+  const ranges = RANGES[section];
+  const [start, end] = ranges[rangeIndex];
+  showScreen('screen-loading');
 
-      if (!data.success || !data.questions || !data.questions.length) {
-        alert('Ошибка загрузки вопросов. Попробуйте позже.');
-        showScreen('screen-pb-a1-ranges');
-        return;
-      }
+  const studyBackBtn = document.getElementById('study-back-btn');
+  studyBackBtn.onclick = () => showScreen(section === 'gip' ? 'screen-gip-ranges' : 'screen-pb-a1-ranges');
 
-      a1Questions = data.questions;
-      studyIndex = 0;
-      showScreen('screen-pb-study');
-      renderStudyCard();
+  try {
+    const action = section === 'gip' ? 'getGIPQuestions' : 'getA1Questions';
+    const res = await fetch(`${API_URL}?action=${action}&mode=study&start=${start}&end=${end}`);
+    const data = await res.json();
+    if (!data.success || !data.questions || !data.questions.length) { alert('Ошибка загрузки вопросов.'); showScreen(section === 'gip' ? 'screen-gip-ranges' : 'screen-pb-a1-ranges'); return; }
+    studyQuestions = data.questions;
+    studyIndex = 0;
+    showScreen('screen-study');
+    renderStudyCard();
+  } catch(e) { alert('Ошибка соединения.'); showScreen(section === 'gip' ? 'screen-gip-ranges' : 'screen-pb-a1-ranges'); }
+}
 
-    } catch(e) {
-      alert('Ошибка соединения. Проверьте интернет.');
-      showScreen('screen-pb-a1-ranges');
-    }
-  }
+function renderStudyCard() {
+  const q = studyQuestions[studyIndex];
+  studySelected = [];
 
-  function renderStudyCard() {
-    const q = a1Questions[studyIndex];
-    studySelected = [];
+  document.getElementById('study-progress').textContent = `${q.id} / ${totalInSection}`;
+  document.getElementById('study-result-label').style.display = 'none';
+  document.getElementById('study-comment').style.display = 'none';
 
-    document.getElementById('study-progress').textContent = `${q.id} / 211`;
+  const wrap = document.getElementById('study-options-wrap');
+  wrap.innerHTML = '';
+
+  if (q.type === 'fillin') {
+    document.getElementById('study-q-text').textContent = '';
+    document.getElementById('study-q-hint').textContent = '';
+    renderFillin(q, wrap, 'study');
+  } else if (q.type === 'matching') {
+    renderMatching(q, wrap, 'study');
+  } else if (q.type === 'ordering') {
+    renderOrdering(q, wrap, 'study');
+  } else {
     document.getElementById('study-q-text').textContent = q.question;
     document.getElementById('study-q-hint').textContent = q.type === 'multiple' ? 'Выберите все правильные ответы' : '';
-
-    document.getElementById('study-result-label').style.display = 'none';
-    document.getElementById('study-comment').style.display = 'none';
-
-    const wrap = document.getElementById('study-options-wrap');
-    wrap.innerHTML = '';
     q.answers.forEach((ans, i) => {
       const btn = document.createElement('button');
       btn.className = 'option';
-      const indicator = document.createElement('span');
-      indicator.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
-      const text = document.createElement('span');
-      text.className = 'option-text';
-      text.textContent = ans;
-      btn.appendChild(indicator);
-      btn.appendChild(text);
+      const ind = document.createElement('span');
+      ind.className = 'option-indicator ' + (q.type === 'multiple' ? 'checkbox' : 'radio');
+      const txt = document.createElement('span'); txt.className = 'option-text'; txt.textContent = ans;
+      btn.appendChild(ind); btn.appendChild(txt);
       btn.onclick = () => selectStudyOption(btn, i + 1, q.type);
       wrap.appendChild(btn);
     });
-
-    const answerBtn = document.getElementById('study-answer-btn');
-    answerBtn.style.display = 'block';
-    answerBtn.disabled = true;
-    answerBtn.textContent = 'Ответить';
-
-    document.getElementById('study-nav-row').style.display = 'none';
-    document.getElementById('study-prev').disabled = studyIndex === 0;
-    document.getElementById('study-next').textContent =
-      studyIndex === a1Questions.length - 1 ? 'Завершить' : 'Далее →';
   }
 
-  function selectStudyOption(btn, num, type) {
-    if (type === 'single') {
-      document.querySelectorAll('#study-options-wrap .option').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      studySelected = [num];
-    } else {
-      btn.classList.toggle('selected');
-      if (btn.classList.contains('selected')) studySelected.push(num);
-      else studySelected = studySelected.filter(a => a !== num);
-    }
-    document.getElementById('study-answer-btn').disabled = studySelected.length === 0;
-  }
+  const answerBtn = document.getElementById('study-answer-btn');
+  answerBtn.style.display = 'block';
+  if (q.type !== 'ordering') answerBtn.disabled = true;
+  answerBtn.textContent = 'Ответить';
+  document.getElementById('study-nav-row').style.display = 'none';
+  document.getElementById('study-prev').disabled = studyIndex === 0;
+  document.getElementById('study-next').textContent = studyIndex === studyQuestions.length - 1 ? 'Завершить' : 'Далее →';
+}
 
-  function checkStudyAnswer() {
-    const q = a1Questions[studyIndex];
+function selectStudyOption(btn, num, type) {
+  if (type === 'single') {
+    document.querySelectorAll('#study-options-wrap .option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected'); studySelected = [num];
+  } else {
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) studySelected.push(num);
+    else studySelected = studySelected.filter(a => a !== num);
+  }
+  document.getElementById('study-answer-btn').disabled = studySelected.length === 0;
+}
+
+function checkStudyAnswer() {
+  const q = studyQuestions[studyIndex];
+  let isCorrect = false;
+
+  if (q.type === 'fillin') {
+    isCorrect = checkFillin(q, 'study');
+  } else if (q.type === 'matching') {
+    isCorrect = checkMatching(q, 'study');
+  } else if (q.type === 'ordering') {
+    isCorrect = checkOrdering(q, 'study');
+  } else {
     const correct = String(q.correct).split(',').map(s => parseInt(s.trim())).sort();
     const user = [...studySelected].sort();
-    const isCorrect = JSON.stringify(correct) === JSON.stringify(user);
-
+    isCorrect = JSON.stringify(correct) === JSON.stringify(user);
     document.querySelectorAll('#study-options-wrap .option').forEach((btn, i) => {
       btn.onclick = null;
       const num = i + 1;
-      if (correct.includes(num)) {
-        btn.classList.add('correct-green');
-        btn.classList.remove('selected');
-      } else if (studySelected.includes(num)) {
-        btn.classList.add('wrong');
-        btn.classList.remove('selected');
-      }
+      if (correct.includes(num)) { btn.classList.add('correct-green'); btn.classList.remove('selected'); }
+      else if (studySelected.includes(num)) { btn.classList.add('wrong'); btn.classList.remove('selected'); }
     });
-
-    const label = document.getElementById('study-result-label');
-    label.style.display = 'block';
-    if (isCorrect) {
-      label.textContent = '✓ Правильно';
-      label.className = 'result-label correct';
-    } else {
-      label.textContent = '✗ Неправильно';
-      label.className = 'result-label incorrect';
-    }
-
-    if (q.comment) {
-      document.getElementById('study-comment-text').textContent = q.comment;
-      document.getElementById('study-comment').style.display = 'block';
-    }
-
-    document.getElementById('study-answer-btn').style.display = 'none';
-    document.getElementById('study-nav-row').style.display = 'flex';
   }
 
-  function studyPrev() {
-    if (studyIndex > 0) {
-      studyIndex--;
-      renderStudyCard();
-    }
+  const label = document.getElementById('study-result-label');
+  label.style.display = 'block';
+  label.textContent = isCorrect ? '✓ Правильно' : '✗ Неправильно';
+  label.className = 'result-label ' + (isCorrect ? 'correct' : 'incorrect');
+
+  if (q.comment) {
+    document.getElementById('study-comment-text').textContent = q.comment;
+    document.getElementById('study-comment').style.display = 'block';
   }
 
-  function studyNext() {
-    if (studyIndex < a1Questions.length - 1) {
-      studyIndex++;
-      renderStudyCard();
-    } else {
-      showStudyComplete();
-    }
-  }
+  document.getElementById('study-answer-btn').style.display = 'none';
+  document.getElementById('study-nav-row').style.display = 'flex';
+}
 
-  function showStudyComplete() {
-    const [start, end] = A1_RANGES[currentRangeIndex];
-    document.getElementById('study-complete-text').textContent = `Блок ${start}–${end} завершён`;
+function studyPrev() { if (studyIndex > 0) { studyIndex--; renderStudyCard(); } }
 
-    const nextBtn = document.getElementById('study-complete-next');
-    if (currentRangeIndex < A1_RANGES.length - 1) {
-      const [ns, ne] = A1_RANGES[currentRangeIndex + 1];
-      nextBtn.style.display = 'block';
-      nextBtn.textContent = `Следующий блок: ${ns}–${ne} →`;
-    } else {
-      nextBtn.style.display = 'none';
-    }
+function studyNext() {
+  if (studyIndex < studyQuestions.length - 1) { studyIndex++; renderStudyCard(); }
+  else showStudyComplete();
+}
 
-    showScreen('screen-pb-study-complete');
-  }
+function showStudyComplete() {
+  const ranges = RANGES[currentStudySection];
+  const [start, end] = ranges[currentRangeIndex];
+  document.getElementById('study-complete-text').textContent = `Блок ${start}–${end} завершён`;
+  const nextBtn = document.getElementById('study-complete-next');
+  const backBtn = document.getElementById('study-complete-back');
+  if (currentRangeIndex < ranges.length - 1) {
+    const [ns, ne] = ranges[currentRangeIndex + 1];
+    nextBtn.style.display = 'block';
+    nextBtn.textContent = `Следующий блок: ${ns}–${ne} →`;
+  } else { nextBtn.style.display = 'none'; }
+  backBtn.onclick = () => goToRangesScreen();
+  showScreen('screen-study-complete');
+}
 
-  function goToNextRange() {
-    startStudyMode(currentRangeIndex + 1);
-  }
+function goToNextRange() { startStudyMode(currentStudySection, currentRangeIndex + 1); }
+function goToRangesScreen() { showScreen(currentStudySection === 'gip' ? 'screen-gip-ranges' : 'screen-pb-a1-ranges'); }
 </script>
 </body>
 </html>
